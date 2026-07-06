@@ -39,6 +39,7 @@ Prioriza código claro y mantenible frente a diseños con abstracciones innecesa
 - Las propiedades mínimas obligatorias del modelo son Id, Titulo, EstaCompletada y FechaCreacion.
 - Las propiedades opcionales recomendadas son FechaVencimiento y Notas.
 - Titulo debe ser obligatorio y tener una longitud razonable validada en el modelo o en la capa de presentación, sin duplicar reglas innecesariamente.
+- En este proyecto, "longitud razonable" para Titulo se define como entre 1 y 200 caracteres utiles tras aplicar trim de espacios en los extremos.
 - FechaCreacion debe almacenarse en UTC cuando se use.
 - FechaVencimiento debe admitir nulos para permitir tareas sin fecha límite.
 - Notas debe ser opcional.
