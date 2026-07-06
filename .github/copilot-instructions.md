@@ -174,6 +174,7 @@ Una estructura típica puede ser:
 
 - Usa el skill de proyecto en .github/skills/mensajes-de-commit cuando haya que redactar o revisar mensajes de commit.
 - Los mensajes de commit de este proyecto deben ir siempre en castellano.
+- El resumen del commit (después de tipo y ámbito) debe redactarse en Capital Case.
 
 ## Validación y manejo de errores
 

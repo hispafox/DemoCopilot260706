@@ -21,6 +21,7 @@ Generar mensajes de commit en castellano, específicos y útiles para este proye
 - El mensaje de commit siempre debe estar en castellano.
 - La primera línea debe incluir siempre un tipo permitido.
 - La primera línea es el resumen: breve, específico y centrado en el cambio real.
+- El resumen del commit (después de tipo y ámbito) debe escribirse en Capital Case.
 - Sé escueto, pero no vago. Un mensaje corto sirve solo si deja claro qué se tocó.
 - No uses resúmenes genéricos como fix, cambios, update, wip, actualizar fichero o actualizar instrucciones.
 - Describe exactamente qué cambió: archivo, comportamiento, validación, configuración, texto o flujo afectado.
