@@ -13,6 +13,8 @@ Este repo sirve como punto de partida para practicar:
 ## Estructura actual
 
 - `.github/copilot-instructions.md`: reglas y convenciones para el asistente.
+- `documentacion/instalar-gh.md`: instalacion de GitHub CLI.
+- `documentacion/conectar-mcp-github.md`: guia para conectar GitHub MCP en este repo.
 
 ## Siguientes pasos recomendados para clase
 

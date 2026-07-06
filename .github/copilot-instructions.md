@@ -169,6 +169,11 @@ Una estructura típica puede ser:
 - Añade comentarios solo cuando la intención no sea obvia en el código.
 - Usa correctamente los tipos por referencia anulables.
 
+## Buenas prácticas para mensajes de commit
+
+- Usa el skill de proyecto en .github/skills/mensajes-de-commit cuando haya que redactar o revisar mensajes de commit.
+- Los mensajes de commit de este proyecto deben ir siempre en castellano.
+
 ## Validación y manejo de errores
 
 - Usa primero la validación integrada del marco de trabajo.
