@@ -1,0 +1,28 @@
+# Visual Studio Code
+.vscode/
+
+# Build outputs
+bin/
+obj/
+out/
+dist/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Node
+node_modules/
+
+# .NET user files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS
+.DS_Store
+Thumbs.db
