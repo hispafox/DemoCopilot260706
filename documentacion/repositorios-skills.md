@@ -2,6 +2,14 @@
 
 > Hoja de recursos para el curso de GitHub Copilot — **Agent Skills (`SKILL.md`)**
 
+## Skill coordinador del curso (local)
+
+Para este curso ya existe un skill local de orquestacion generica para coordinar secuencias de trabajo entre skills:
+
+- Ruta: .github/skills/orquestador-skills/SKILL.md
+- Secuencia base: analisis-diseno -> validador-analisis-prd (opcional recomendado) -> modelo-aplicacion
+- Uso recomendado: invocarlo como paso inicial de cada practica y ajustar la secuencia cuando el ejercicio necesite mas skills.
+
 Una *skill* es una carpeta con un archivo `SKILL.md`: instrucciones en lenguaje claro que el agente (Copilot, Claude Code, Codex…) lee **solo cuando hacen falta**. No es código, son instrucciones. La mejor forma de aprender a crearlas es **leer las de otros**. Aquí tienes dónde.
 
 ---

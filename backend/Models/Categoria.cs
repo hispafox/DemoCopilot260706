@@ -16,4 +16,16 @@ public class Categoria
     public string Color { get; set; } = string.Empty;
 
     public ICollection<Tarea> Tareas { get; set; } = new List<Tarea>();
+
+    public Categoria()
+    {
+    }
+
+    public Categoria(string nombre, string color)
+    {
+        Nombre = nombre;
+        Color = color;
+    }
+
+    public bool EstaActiva { get; set; } = true;
 }

@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Models;
 
-public class Tarea : IValidatableObject
+public class PlantillaTarea : IValidatableObject
 {
     private string _titulo = string.Empty;
 
@@ -19,45 +18,25 @@ public class Tarea : IValidatableObject
         set => _titulo = (value ?? string.Empty).Trim();
     }
 
-    public bool EstaCompletada { get; set; }
-
-    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
-
-    public DateTime? FechaVencimiento { get; set; }
-
     public string? Notas { get; set; }
 
     public bool EsRepetitiva { get; set; }
 
     public TipoRecurrencia? TipoRecurrencia { get; set; }
 
-    public DateTime? ProximaRecurrencia { get; set; }
-
-    public int? PlantillaTareaId { get; set; }
-
-    public PlantillaTarea? PlantillaTarea { get; set; }
-
     public int? CategoriaId { get; set; }
 
     public Categoria? Categoria { get; set; }
 
+    public bool EstaActiva { get; set; } = true;
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (!EsRepetitiva)
+        if (!EsRepetitiva && TipoRecurrencia is not null)
         {
-            if (TipoRecurrencia is not null)
-            {
-                yield return new ValidationResult(
-                    "TipoRecurrencia debe ser null cuando EsRepetitiva es false.",
-                    new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
-            }
-
-            if (ProximaRecurrencia is not null)
-            {
-                yield return new ValidationResult(
-                    "ProximaRecurrencia debe ser null cuando EsRepetitiva es false.",
-                    new[] { nameof(ProximaRecurrencia), nameof(EsRepetitiva) });
-            }
+            yield return new ValidationResult(
+                "TipoRecurrencia debe ser null cuando EsRepetitiva es false.",
+                new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
         }
 
         if (EsRepetitiva && TipoRecurrencia is null)
