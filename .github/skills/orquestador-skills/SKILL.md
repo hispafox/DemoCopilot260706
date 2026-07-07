@@ -24,7 +24,8 @@ Secuencia base recomendada en este repo:
 2. analisis-diseno
 3. validador-analisis-prd (opcional recomendado)
 4. modelo-aplicacion
-5. controladores-api (cuando el cambio alcanza contratos HTTP o endpoints)
+5. dtos-aplicacion (cuando el cambio alcanza contratos HTTP)
+6. controladores-api (cuando el cambio alcanza endpoints HTTP)
 
 El objetivo es reducir errores por saltarse pasos, mantener trazabilidad y permitir orquestar tambien otras cadenas de skills cuando el curso lo requiera.
 
@@ -107,7 +108,7 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 - Si hay validacion recomendada, intentar ejecutarla; si falla por causa tecnica, continuar con nota de riesgo.
 - Si hay validacion obligatoria, no continuar al siguiente skill sin validacion completada.
 - Si un paso de la secuencia no aplica por alcance real, marcarlo como Omitido en el cierre y justificarlo brevemente.
-- Si el cambio alcanza contratos HTTP o endpoints, no cerrar la cadena en modelo-aplicacion: continuar con controladores-api.
+- Si el cambio alcanza contratos HTTP, no cerrar la cadena en modelo-aplicacion: continuar con dtos-aplicacion y despues controladores-api si hay impacto en endpoints.
 
 ## Formato de salida sugerido
 
@@ -140,4 +141,4 @@ Usar una salida breve y trazable:
 
 ## Ejemplo de peticion
 
-'Aplica orquestador-skills con secuencia infraestructura-dotnet -> analisis-diseno -> validador-analisis-prd -> modelo-aplicacion -> controladores-api para agregar un nuevo campo con impacto en API, con validacion PRD en modo obligatorio y reporte final por pasos.'
+'Aplica orquestador-skills con secuencia infraestructura-dotnet -> analisis-diseno -> validador-analisis-prd -> modelo-aplicacion -> dtos-aplicacion -> controladores-api para agregar un cambio con impacto en contratos y endpoints API, con validacion PRD en modo obligatorio y reporte final por pasos.'
