@@ -1,7 +1,7 @@
 ---
 name: validador-analisis-prd
 description: 'Valida consistencia entre analisis/diseno tecnico y PRD para detectar contradicciones, huecos y desincronizacion de alcance antes de implementar cambios.'
-argument-hint: 'Indica las rutas de PRD y analisis/diseno, el contexto de version y si quieres solo hallazgos criticos o informe completo.'
+argument-hint: 'Indica las rutas de PRD y analisis/diseno, el contexto de version, si quieres solo hallazgos criticos o informe completo y la ruta de salida si no quieres usar la ruta Markdown con fecha por defecto.'
 ---
 
 # Validador Analisis-PRD
@@ -30,6 +30,8 @@ Y detectar:
 - Ruta del PRD (por defecto: documentacion/PRD.md)
 - Ruta del analisis/diseno (por defecto: documentacion/analisis-diseno.md o equivalente real del repo)
 - Version objetivo (por ejemplo: v1, v1.1)
+- Ruta de salida opcional del informe Markdown
+  - Por defecto: documentacion/informes/validacion-analisis-prd-AAAA-MM-DD.md
 - Modo de salida:
   - rapido (solo bloqueantes y altos)
   - completo (todos los hallazgos)
@@ -72,7 +74,15 @@ Y detectar:
 
 ## Formato de salida requerido
 
-Generar siempre el informe con esta estructura:
+Generar siempre el informe en un archivo Markdown y guardarlo en disco.
+
+- Nombre del archivo por defecto: validacion-analisis-prd-AAAA-MM-DD.md
+- Carpeta por defecto: documentacion/informes/
+- Si el usuario pasa una ruta de salida explicita, usar esa ruta.
+- Si la carpeta de salida no existe, crearla.
+- La respuesta final debe indicar la ruta exacta del archivo generado.
+
+El contenido del Markdown debe seguir esta estructura:
 
 1. Resumen ejecutivo:
 - indice global de sincronia
@@ -120,4 +130,4 @@ Generar siempre el informe con esta estructura:
 
 ## Ejemplo de peticion
 
-"Valida sincronizacion entre documentacion/PRD.md y documentacion/analisis-diseno.md para v1 en modo completo. Prioriza inconsistencias de alcance, reglas de negocio y endpoints."
+"Valida sincronizacion entre documentacion/PRD.md y documentacion/analisis-diseno.md para v1 en modo completo. Prioriza inconsistencias de alcance, reglas de negocio y endpoints, y guarda el informe en un Markdown con fecha."
