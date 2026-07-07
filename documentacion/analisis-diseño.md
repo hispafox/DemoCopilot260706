@@ -11,7 +11,8 @@ En el estado actual del código, la implementación está en fase inicial y ya i
 | Tecnología | Versión | Rol |
 |---|---|---|
 | C# | No declarada en el repositorio | Lenguaje del backend |
-| .NET (espacios de nombres `System`) | No declarada en el repositorio | Plataforma base del modelo de dominio |
+| ASP.NET Core Web API | net10.0 | Capa HTTP del backend |
+| .NET | net10.0 | Plataforma del backend |
 | `System.ComponentModel.DataAnnotations` | Incluida en .NET | Validación declarativa del modelo (`Required`, `StringLength`) |
 | Markdown | N/A | Documentación funcional y técnica |
 
@@ -19,17 +20,29 @@ En el estado actual del código, la implementación está en fase inicial y ya i
 
 | Capa | Carpeta | Responsabilidad |
 |---|---|---|
+| API | `backend/Controllers` | Endpoints HTTP de tareas y plantillas |
 | Dominio | `backend/Models` | Define entidades del negocio |
+| Arranque | `backend/Program.cs` | Configuración mínima de ASP.NET Core y mapeo de controladores |
 | Documentación | `documentacion` | PRD, análisis y guías operativas |
 | Automatización documental | `scripts` | Pipeline para validar y generar informes |
 
 Árbol de carpetas y archivos clave del estado actual:
 
 ```text
+DemoCopilot260706.slnx
 backend/
+    Backend.Api.csproj
+    Program.cs
+    appsettings.json
+    Controllers/
+        InMemoryStore.cs
+        PlantillasTareaController.cs
+        TareasController.cs
     Models/
         Categoria.cs
+        PlantillaTarea.cs
         Tarea.cs
+        TipoRecurrencia.cs
 documentacion/
     PRD.md
     analisis-diseño.md
@@ -47,7 +60,6 @@ Reglas de diseño aplicadas y observables en código actual:
 Elementos no implementados todavía en el código:
 
 - No existe `DbContext` en `backend/Data`.
-- No existen controladores en `backend/Controllers`.
 - No existen servicios en `backend/Services`.
 - No existe frontend en `frontend/`.
 
@@ -206,11 +218,22 @@ public enum TipoRecurrencia
 
 ## 5. Endpoints API REST
 
-No hay endpoints implementados en el estado actual del código, porque no existen controladores en `backend/Controllers`.
+La API REST está implementada actualmente con almacenamiento en memoria (`InMemoryStore`) y sin persistencia SQLite todavía.
 
 | Verbo | Ruta | Descripción | Respuesta OK | Error |
 |---|---|---|---|---|
-| N/A | N/A | API REST no implementada todavía en este repositorio | N/A | N/A |
+| GET | `/api/tareas` | Lista tareas ordenadas por fecha de creación desc | `200 OK` | N/A |
+| GET | `/api/tareas/{id}` | Obtiene tarea por id | `200 OK` | `404 Not Found` |
+| POST | `/api/tareas` | Crea tarea | `201 Created` | `400 ValidationProblem` |
+| PUT | `/api/tareas/{id}` | Actualiza tarea | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
+| DELETE | `/api/tareas/{id}` | Elimina tarea | `204 NoContent` | `404 Not Found` |
+| POST | `/api/tareas/{id}/completar` | Marca tarea como completada y genera siguiente ocurrencia si aplica | `200 OK` | `404 Not Found` |
+| POST | `/api/tareas/desde-plantilla/{plantillaId}` | Crea tarea desde plantilla existente | `201 Created` | `404 Not Found` |
+| GET | `/api/plantillas` | Lista plantillas | `200 OK` | N/A |
+| GET | `/api/plantillas/{id}` | Obtiene plantilla por id | `200 OK` | `404 Not Found` |
+| POST | `/api/plantillas` | Crea plantilla | `201 Created` | `400 ValidationProblem` |
+| PUT | `/api/plantillas/{id}` | Actualiza plantilla | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
+| DELETE | `/api/plantillas/{id}` | Elimina plantilla y desvincula tareas asociadas | `204 NoContent` | `404 Not Found` |
 
 ## 6. Decisiones de diseño
 
@@ -226,9 +249,7 @@ No hay endpoints implementados en el estado actual del código, porque no existe
 ## 7. Pendientes / Preguntas abiertas
 
 - **Implementación de persistencia**: falta crear `ApplicationDbContext` y configuración de EF Core con SQLite.
-- **Implementación de API REST**: faltan controladores y endpoints CRUD de tareas definidos en el PRD.
-- **Validación de longitud mínima tras trim**: el PRD/instrucciones exige longitud útil entre 1 y 200 tras trim; el modelo actual no garantiza explícitamente esa regla de trim.
-- **API de plantillas de tarea**: falta implementar controladores y endpoints para CRUD de `PlantillaTarea` e instanciación.
-- **Flujo de completar con recurrencia**: falta implementar endpoint/caso de uso para completar tarea y generar siguiente ocurrencia de forma idempotente.
+- **Consolidar solución**: definir si se mantiene `slnx` como formato oficial o si se incorpora también `.sln` para compatibilidad con tooling externo.
+- **Persistencia actual en memoria**: validar migración desde `InMemoryStore` a EF Core + SQLite para cumplir el PRD de persistencia local.
 - **Frontend React + TypeScript + Vite**: está definido en las instrucciones del proyecto, pero no existe carpeta `frontend` en el repositorio actual.
 - **Pruebas automatizadas**: no hay proyecto de tests para validar reglas de negocio ni comportamiento HTTP.

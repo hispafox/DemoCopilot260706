@@ -1,0 +1,48 @@
+@host = http://localhost:55146
+@json = application/json
+
+### Health-style check (listar tareas)
+GET {{host}}/api/tareas
+Accept: {{json}}
+
+### Obtener tarea inexistente (error esperado 404)
+GET {{host}}/api/tareas/999999
+Accept: {{json}}
+
+### Crear tarea (201)
+POST {{host}}/api/tareas
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "Preparar demo",
+  "estaCompletada": false,
+  "notas": "Creada desde Backend.Api.http",
+  "esRepetitiva": true,
+  "tipoRecurrencia": 1
+}
+
+### Completar tarea inexistente (error esperado 404)
+POST {{host}}/api/tareas/999999/completar
+Accept: {{json}}
+
+### Listar plantillas
+GET {{host}}/api/plantillas
+Accept: {{json}}
+
+### Obtener plantilla inexistente (error esperado 404)
+GET {{host}}/api/plantillas/999999
+Accept: {{json}}
+
+### Crear plantilla (201)
+POST {{host}}/api/plantillas
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "Plantilla semanal",
+  "notas": "Prueba manual",
+  "esRepetitiva": true,
+  "tipoRecurrencia": 2,
+  "estaActiva": true
+}
