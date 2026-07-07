@@ -1,0 +1,150 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Backend.Models;
+
+namespace Backend.Contracts;
+
+public class TareaDto
+{
+    public int Id { get; set; }
+
+    public string Titulo { get; set; } = string.Empty;
+
+    public bool EstaCompletada { get; set; }
+
+    public DateTime FechaCreacion { get; set; }
+
+    public DateTime? FechaVencimiento { get; set; }
+
+    public string? Notas { get; set; }
+
+    public PrioridadTarea Prioridad { get; set; }
+
+    public bool EsRepetitiva { get; set; }
+
+    public TipoRecurrencia? TipoRecurrencia { get; set; }
+
+    public DateTime? ProximaRecurrencia { get; set; }
+
+    public int? PlantillaTareaId { get; set; }
+
+    public int? CategoriaId { get; set; }
+}
+
+public class CrearActualizarTareaRequest : IValidatableObject
+{
+    private string _titulo = string.Empty;
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El titulo no puede estar vacio.")]
+    [StringLength(200)]
+    public string Titulo
+    {
+        get => _titulo;
+        set => _titulo = (value ?? string.Empty).Trim();
+    }
+
+    public bool EstaCompletada { get; set; }
+
+    public DateTime? FechaVencimiento { get; set; }
+
+    public string? Notas { get; set; }
+
+    public PrioridadTarea Prioridad { get; set; } = PrioridadTarea.Normal;
+
+    public bool EsRepetitiva { get; set; }
+
+    public TipoRecurrencia? TipoRecurrencia { get; set; }
+
+    public DateTime? ProximaRecurrencia { get; set; }
+
+    public int? PlantillaTareaId { get; set; }
+
+    public int? CategoriaId { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (!EsRepetitiva)
+        {
+            if (TipoRecurrencia is not null)
+            {
+                yield return new ValidationResult(
+                    "TipoRecurrencia debe ser null cuando EsRepetitiva es false.",
+                    new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
+            }
+
+            if (ProximaRecurrencia is not null)
+            {
+                yield return new ValidationResult(
+                    "ProximaRecurrencia debe ser null cuando EsRepetitiva es false.",
+                    new[] { nameof(ProximaRecurrencia), nameof(EsRepetitiva) });
+            }
+        }
+
+        if (EsRepetitiva && TipoRecurrencia is null)
+        {
+            yield return new ValidationResult(
+                "TipoRecurrencia es obligatorio cuando EsRepetitiva es true.",
+                new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
+        }
+    }
+}
+
+public class PlantillaTareaDto
+{
+    public int Id { get; set; }
+
+    public string Titulo { get; set; } = string.Empty;
+
+    public string? Notas { get; set; }
+
+    public bool EsRepetitiva { get; set; }
+
+    public TipoRecurrencia? TipoRecurrencia { get; set; }
+
+    public int? CategoriaId { get; set; }
+
+    public bool EstaActiva { get; set; }
+}
+
+public class CrearActualizarPlantillaTareaRequest : IValidatableObject
+{
+    private string _titulo = string.Empty;
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El titulo no puede estar vacio.")]
+    [StringLength(200)]
+    public string Titulo
+    {
+        get => _titulo;
+        set => _titulo = (value ?? string.Empty).Trim();
+    }
+
+    public string? Notas { get; set; }
+
+    public bool EsRepetitiva { get; set; }
+
+    public TipoRecurrencia? TipoRecurrencia { get; set; }
+
+    public int? CategoriaId { get; set; }
+
+    public bool EstaActiva { get; set; } = true;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (!EsRepetitiva && TipoRecurrencia is not null)
+        {
+            yield return new ValidationResult(
+                "TipoRecurrencia debe ser null cuando EsRepetitiva es false.",
+                new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
+        }
+
+        if (EsRepetitiva && TipoRecurrencia is null)
+        {
+            yield return new ValidationResult(
+                "TipoRecurrencia es obligatorio cuando EsRepetitiva es true.",
+                new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
+        }
+    }
+}

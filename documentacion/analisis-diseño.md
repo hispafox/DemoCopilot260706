@@ -21,6 +21,7 @@ En el estado actual del código, la implementación está en fase inicial y ya i
 | Capa | Carpeta | Responsabilidad |
 |---|---|---|
 | API | `backend/Controllers` | Endpoints HTTP de tareas y plantillas |
+| Contratos | `backend/Contracts` | DTOs de entrada y salida para la API |
 | Dominio | `backend/Models` | Define entidades del negocio |
 | Arranque | `backend/Program.cs` | Configuración mínima de ASP.NET Core y mapeo de controladores |
 | Documentación | `documentacion` | PRD, análisis y guías operativas |
@@ -34,6 +35,8 @@ backend/
     Backend.Api.csproj
     Program.cs
     appsettings.json
+    Contracts/
+        ApiContracts.cs
     Controllers/
         InMemoryStore.cs
         PlantillasTareaController.cs
@@ -56,6 +59,7 @@ Reglas de diseño aplicadas y observables en código actual:
 - Entidad de dominio separada en carpeta específica (`backend/Models`).
 - Validación por atributos en el propio modelo (`Required`, `StringLength`).
 - Uso de `DateTime.UtcNow` para inicializar la fecha de creación en UTC.
+- Separación de contratos HTTP en `backend/Contracts` para no exponer entidades internas directamente desde los controladores.
 
 Elementos no implementados todavía en el código:
 
@@ -75,6 +79,7 @@ Elementos no implementados todavía en el código:
 | FechaCreacion | `DateTime` | Fecha de creación inicializada en UTC |
 | FechaVencimiento | `DateTime?` | Fecha límite opcional |
 | Notas | `string?` | Texto libre opcional |
+| Prioridad | `PrioridadTarea` | Prioridad funcional de la tarea (`Baja`, `Normal`, `Alta`, `Urgente`) |
 | EsRepetitiva | `bool` | Indica si la tarea participa en recurrencia |
 | TipoRecurrencia | `TipoRecurrencia?` | Frecuencia de repetición (diaria, semanal o mensual) |
 | ProximaRecurrencia | `DateTime?` | Próxima fecha planificada para la ocurrencia |
@@ -105,6 +110,8 @@ public class Tarea
     public DateTime? FechaVencimiento { get; set; }
 
     public string? Notas { get; set; }
+
+    public PrioridadTarea Prioridad { get; set; } = PrioridadTarea.Normal;
 
     public bool EsRepetitiva { get; set; }
 
@@ -216,23 +223,37 @@ public enum TipoRecurrencia
 }
 ```
 
+### PrioridadTarea
+
+```csharp
+namespace Backend.Models;
+
+public enum PrioridadTarea
+{
+    Baja = 1,
+    Normal = 2,
+    Alta = 3,
+    Urgente = 4
+}
+```
+
 ## 5. Endpoints API REST
 
 La API REST está implementada actualmente con almacenamiento en memoria (`InMemoryStore`) y sin persistencia SQLite todavía.
 
 | Verbo | Ruta | Descripción | Respuesta OK | Error |
 |---|---|---|---|---|
-| GET | `/api/tareas` | Lista tareas ordenadas por fecha de creación desc | `200 OK` | N/A |
-| GET | `/api/tareas/{id}` | Obtiene tarea por id | `200 OK` | `404 Not Found` |
-| POST | `/api/tareas` | Crea tarea | `201 Created` | `400 ValidationProblem` |
-| PUT | `/api/tareas/{id}` | Actualiza tarea | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
+| GET | `/api/tareas` | Lista tareas ordenadas por fecha de creación desc, devolviendo `TareaDto` | `200 OK` | N/A |
+| GET | `/api/tareas/{id}` | Obtiene tarea por id, devolviendo `TareaDto` | `200 OK` | `404 Not Found` |
+| POST | `/api/tareas` | Crea tarea desde `CrearActualizarTareaRequest` | `201 Created` | `400 ValidationProblem` |
+| PUT | `/api/tareas/{id}` | Actualiza tarea desde `CrearActualizarTareaRequest` | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
 | DELETE | `/api/tareas/{id}` | Elimina tarea | `204 NoContent` | `404 Not Found` |
-| POST | `/api/tareas/{id}/completar` | Marca tarea como completada y genera siguiente ocurrencia si aplica | `200 OK` | `404 Not Found` |
-| POST | `/api/tareas/desde-plantilla/{plantillaId}` | Crea tarea desde plantilla existente | `201 Created` | `404 Not Found` |
-| GET | `/api/plantillas` | Lista plantillas | `200 OK` | N/A |
-| GET | `/api/plantillas/{id}` | Obtiene plantilla por id | `200 OK` | `404 Not Found` |
-| POST | `/api/plantillas` | Crea plantilla | `201 Created` | `400 ValidationProblem` |
-| PUT | `/api/plantillas/{id}` | Actualiza plantilla | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
+| POST | `/api/tareas/{id}/completar` | Marca tarea como completada y genera siguiente ocurrencia si aplica, devolviendo `TareaDto` | `200 OK` | `404 Not Found` |
+| POST | `/api/tareas/desde-plantilla/{plantillaId}` | Crea tarea desde plantilla existente y devuelve `TareaDto` | `201 Created` | `404 Not Found` |
+| GET | `/api/plantillas` | Lista plantillas devolviendo `PlantillaTareaDto` | `200 OK` | N/A |
+| GET | `/api/plantillas/{id}` | Obtiene plantilla por id devolviendo `PlantillaTareaDto` | `200 OK` | `404 Not Found` |
+| POST | `/api/plantillas` | Crea plantilla desde `CrearActualizarPlantillaTareaRequest` | `201 Created` | `400 ValidationProblem` |
+| PUT | `/api/plantillas/{id}` | Actualiza plantilla desde `CrearActualizarPlantillaTareaRequest` | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
 | DELETE | `/api/plantillas/{id}` | Elimina plantilla y desvincula tareas asociadas | `204 NoContent` | `404 Not Found` |
 
 ## 6. Decisiones de diseño
@@ -241,10 +262,12 @@ La API REST está implementada actualmente con almacenamiento en memoria (`InMem
 - **Validación declarativa en el dominio**: `Titulo` se define como obligatorio y con límite máximo de 200 caracteres mediante Data Annotations, reduciendo lógica manual repetitiva.
 - **Fecha de creación en UTC**: `FechaCreacion` se inicializa con `DateTime.UtcNow` para mantener consistencia temporal desde el origen de datos.
 - **Campos opcionales como anulables**: `FechaVencimiento` y `Notas` se modelan como opcionales para permitir tareas sin fecha límite ni notas.
+- **Priorización explícita de tareas**: `Tarea` incorpora `Prioridad` con valores `Baja`, `Normal`, `Alta` y `Urgente`, con valor por defecto `Normal`.
 - **Clasificación visual por categoría**: se incorpora la entidad `Categoria` con `Nombre` y `Color` para habilitar taxonomía funcional y representación visual consistente.
 - **Relación de categorización**: `Tarea` incorpora `CategoriaId` y navegación `Categoria`, y `Categoria` expone la colección `Tareas` para representar la asociación en ambos sentidos.
 - **Recurrencia explícita en dominio**: `Tarea` incorpora `EsRepetitiva`, `TipoRecurrencia` y `ProximaRecurrencia` para modelar reglas de recurrencia declaradas en PRD.
 - **Plantillas reutilizables**: se incorpora la entidad `PlantillaTarea` y su relación opcional con `Tarea` mediante `PlantillaTareaId`.
+- **Contratos HTTP desacoplados**: las acciones de API usan DTOs dedicados para entrada y salida, preservando el modelo de dominio interno.
 
 ## 7. Pendientes / Preguntas abiertas
 

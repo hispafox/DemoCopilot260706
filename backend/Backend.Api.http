@@ -1,7 +1,7 @@
 @host = http://localhost:55146
 @json = application/json
 
-### Health-style check (listar tareas)
+### Listar tareas (contrato DTO)
 GET {{host}}/api/tareas
 Accept: {{json}}
 
@@ -9,7 +9,7 @@ Accept: {{json}}
 GET {{host}}/api/tareas/999999
 Accept: {{json}}
 
-### Crear tarea (201)
+### Crear tarea (201, DTO de entrada)
 POST {{host}}/api/tareas
 Content-Type: {{json}}
 Accept: {{json}}
@@ -18,15 +18,28 @@ Accept: {{json}}
   "titulo": "Preparar demo",
   "estaCompletada": false,
   "notas": "Creada desde Backend.Api.http",
+  "prioridad": 4,
   "esRepetitiva": true,
   "tipoRecurrencia": 1
+}
+
+### Crear tarea inválida (400)
+POST {{host}}/api/tareas
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "   ",
+  "estaCompletada": false,
+  "notas": "Debe fallar por titulo vacío tras trim",
+  "esRepetitiva": false
 }
 
 ### Completar tarea inexistente (error esperado 404)
 POST {{host}}/api/tareas/999999/completar
 Accept: {{json}}
 
-### Listar plantillas
+### Listar plantillas (contrato DTO)
 GET {{host}}/api/plantillas
 Accept: {{json}}
 
@@ -34,7 +47,7 @@ Accept: {{json}}
 GET {{host}}/api/plantillas/999999
 Accept: {{json}}
 
-### Crear plantilla (201)
+### Crear plantilla (201, DTO de entrada)
 POST {{host}}/api/plantillas
 Content-Type: {{json}}
 Accept: {{json}}
@@ -44,5 +57,17 @@ Accept: {{json}}
   "notas": "Prueba manual",
   "esRepetitiva": true,
   "tipoRecurrencia": 2,
+  "estaActiva": true
+}
+
+### Crear plantilla inválida (400)
+POST {{host}}/api/plantillas
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "   ",
+  "notas": "Debe fallar por titulo vacío tras trim",
+  "esRepetitiva": false,
   "estaActiva": true
 }

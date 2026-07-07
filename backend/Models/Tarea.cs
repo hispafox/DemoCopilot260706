@@ -27,6 +27,8 @@ public class Tarea : IValidatableObject
 
     public string? Notas { get; set; }
 
+    public PrioridadTarea Prioridad { get; set; } = PrioridadTarea.Normal;
+
     public bool EsRepetitiva { get; set; }
 
     public TipoRecurrencia? TipoRecurrencia { get; set; }

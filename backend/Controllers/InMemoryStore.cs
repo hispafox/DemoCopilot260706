@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Backend.Models;
 
-namespace Backend.Controllers;
+namespace Backend.Services;
 
-internal static class InMemoryStore
+public static class InMemoryStore
 {
     private static int _siguienteTareaId = 1;
     private static int _siguientePlantillaId = 1;
@@ -22,5 +22,16 @@ internal static class InMemoryStore
     public static int ObtenerSiguientePlantillaId()
     {
         return _siguientePlantillaId++;
+    }
+
+    public static void Reiniciar()
+    {
+        lock (SyncRoot)
+        {
+            _siguienteTareaId = 1;
+            _siguientePlantillaId = 1;
+            Tareas.Clear();
+            Plantillas.Clear();
+        }
     }
 }

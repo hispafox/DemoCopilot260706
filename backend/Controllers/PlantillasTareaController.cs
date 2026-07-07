@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Backend.Models;
+using Backend.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Backend.Services;
 
 namespace Backend.Controllers;
 
@@ -10,99 +10,54 @@ namespace Backend.Controllers;
 [Route("api/plantillas")]
 public class PlantillasTareaController : ControllerBase
 {
-    [HttpGet]
-    public ActionResult<IEnumerable<PlantillaTarea>> ObtenerTodas()
+    private readonly IPlantillasTareaService _plantillasTareaService;
+
+    public PlantillasTareaController(IPlantillasTareaService plantillasTareaService)
     {
-        lock (InMemoryStore.SyncRoot)
-        {
-            return Ok(InMemoryStore.Plantillas.ToList());
-        }
+        _plantillasTareaService = plantillasTareaService;
+    }
+
+    [HttpGet]
+    public ActionResult<IEnumerable<PlantillaTareaDto>> ObtenerTodas()
+    {
+        return Ok(_plantillasTareaService.ObtenerTodas());
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<PlantillaTarea> ObtenerPorId(int id)
+    public ActionResult<PlantillaTareaDto> ObtenerPorId(int id)
     {
-        lock (InMemoryStore.SyncRoot)
-        {
-            var plantilla = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == id);
-            return plantilla is null ? NotFound() : Ok(plantilla);
-        }
+        var plantilla = _plantillasTareaService.ObtenerPorId(id);
+        return plantilla is null ? NotFound() : Ok(plantilla);
     }
 
     [HttpPost]
-    public ActionResult<PlantillaTarea> Crear([FromBody] PlantillaTarea plantilla)
+    public ActionResult<PlantillaTareaDto> Crear([FromBody] CrearActualizarPlantillaTareaRequest plantilla)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        var nuevaPlantilla = new PlantillaTarea
-        {
-            Id = InMemoryStore.ObtenerSiguientePlantillaId(),
-            Titulo = plantilla.Titulo,
-            Notas = plantilla.Notas,
-            EsRepetitiva = plantilla.EsRepetitiva,
-            TipoRecurrencia = plantilla.TipoRecurrencia,
-            CategoriaId = plantilla.CategoriaId,
-            EstaActiva = plantilla.EstaActiva
-        };
-
-        lock (InMemoryStore.SyncRoot)
-        {
-            InMemoryStore.Plantillas.Add(nuevaPlantilla);
-        }
-
+        var nuevaPlantilla = _plantillasTareaService.Crear(plantilla);
         return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaPlantilla.Id }, nuevaPlantilla);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<PlantillaTarea> Actualizar(int id, [FromBody] PlantillaTarea plantillaActualizada)
+    public ActionResult<PlantillaTareaDto> Actualizar(int id, [FromBody] CrearActualizarPlantillaTareaRequest plantillaActualizada)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        lock (InMemoryStore.SyncRoot)
-        {
-            var plantillaExistente = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == id);
-            if (plantillaExistente is null)
-            {
-                return NotFound();
-            }
-
-            plantillaExistente.Titulo = plantillaActualizada.Titulo;
-            plantillaExistente.Notas = plantillaActualizada.Notas;
-            plantillaExistente.EsRepetitiva = plantillaActualizada.EsRepetitiva;
-            plantillaExistente.TipoRecurrencia = plantillaActualizada.TipoRecurrencia;
-            plantillaExistente.CategoriaId = plantillaActualizada.CategoriaId;
-            plantillaExistente.EstaActiva = plantillaActualizada.EstaActiva;
-
-            return Ok(plantillaExistente);
-        }
+        var plantilla = _plantillasTareaService.Actualizar(id, plantillaActualizada);
+        return plantilla is null ? NotFound() : Ok(plantilla);
     }
 
     [HttpDelete("{id:int}")]
     public IActionResult Eliminar(int id)
     {
-        lock (InMemoryStore.SyncRoot)
-        {
-            var plantillaExistente = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == id);
-            if (plantillaExistente is null)
-            {
-                return NotFound();
-            }
-
-            InMemoryStore.Plantillas.Remove(plantillaExistente);
-
-            foreach (var tarea in InMemoryStore.Tareas.Where(item => item.PlantillaTareaId == id))
-            {
-                tarea.PlantillaTareaId = null;
-                tarea.PlantillaTarea = null;
-            }
-
-            return NoContent();
-        }
+        var eliminada = _plantillasTareaService.Eliminar(id);
+        return eliminada ? NoContent() : NotFound();
     }
 }

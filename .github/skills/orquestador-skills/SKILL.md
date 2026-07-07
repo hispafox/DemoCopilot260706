@@ -25,7 +25,8 @@ Secuencia base recomendada en este repo:
 3. validador-analisis-prd (opcional recomendado)
 4. modelo-aplicacion
 5. dtos-aplicacion (cuando el cambio alcanza contratos HTTP)
-6. controladores-api (cuando el cambio alcanza endpoints HTTP)
+6. servicios-aplicacion (cuando el cambio alcanza logica de aplicacion y orquestacion)
+7. controladores-api (cuando el cambio alcanza endpoints HTTP)
 
 El objetivo es reducir errores por saltarse pasos, mantener trazabilidad y permitir orquestar tambien otras cadenas de skills cuando el curso lo requiera.
 
@@ -44,7 +45,7 @@ El objetivo es reducir errores por saltarse pasos, mantener trazabilidad y permi
 - PRD del repo: documentacion/PRD.md (si existe).
 - Analisis tecnico: documentacion/analisis-diseno.md o documentacion/analisis-diseño.md (segun el nombre real en el repo).
 - Estado de infraestructura .NET: .csproj, .sln o .slnx, Program.cs, proyectos de pruebas y referencias NuGet si existen.
-- Estado real del codigo en backend/Models, backend/Controllers y elementos relacionados.
+- Estado real del codigo en backend/Models, backend/Services, backend/Controllers y elementos relacionados.
 - Modo de validacion PRD:
   - recomendado (por defecto)
   - obligatorio
@@ -109,6 +110,8 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 - Si hay validacion obligatoria, no continuar al siguiente skill sin validacion completada.
 - Si un paso de la secuencia no aplica por alcance real, marcarlo como Omitido en el cierre y justificarlo brevemente.
 - Si el cambio alcanza contratos HTTP, no cerrar la cadena en modelo-aplicacion: continuar con dtos-aplicacion y despues controladores-api si hay impacto en endpoints.
+- Si el cambio alcanza logica de aplicacion, insertar servicios-aplicacion antes de controladores-api.
+- Si no existen servicios requeridos por controladores, priorizar servicios-aplicacion para crearlos y registrar su inyeccion en Program.cs antes de tocar endpoints.
 
 ## Formato de salida sugerido
 
@@ -141,4 +144,4 @@ Usar una salida breve y trazable:
 
 ## Ejemplo de peticion
 
-'Aplica orquestador-skills con secuencia infraestructura-dotnet -> analisis-diseno -> validador-analisis-prd -> modelo-aplicacion -> dtos-aplicacion -> controladores-api para agregar un cambio con impacto en contratos y endpoints API, con validacion PRD en modo obligatorio y reporte final por pasos.'
+'Aplica orquestador-skills con secuencia infraestructura-dotnet -> analisis-diseno -> validador-analisis-prd -> modelo-aplicacion -> dtos-aplicacion -> servicios-aplicacion -> controladores-api para agregar un cambio con impacto en contratos, servicios y endpoints API, con validacion PRD en modo obligatorio y reporte final por pasos.'
