@@ -18,4 +18,8 @@ public class Tarea
     public DateTime? FechaVencimiento { get; set; }
 
     public string? Notas { get; set; }
+
+    public int? CategoriaId { get; set; }
+
+    public Categoria? Categoria { get; set; }
 }

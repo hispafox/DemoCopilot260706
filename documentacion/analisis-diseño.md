@@ -4,7 +4,7 @@
 
 El proyecto busca construir una aplicación web de gestión de tareas con enfoque didáctico para formación en GitHub Copilot.
 Según el PRD, el alcance funcional objetivo incluye CRUD de tareas, plantillas y recurrencia básica.
-En el estado actual del código, la implementación está en fase inicial y solo se encuentra definida la entidad de dominio principal.
+En el estado actual del código, la implementación está en fase inicial y ya incluye entidades de dominio para tareas y categorías.
 
 ## 2. Stack tecnológico
 
@@ -28,6 +28,7 @@ En el estado actual del código, la implementación está en fase inicial y solo
 ```text
 backend/
     Models/
+        Categoria.cs
         Tarea.cs
 documentacion/
     PRD.md
@@ -62,6 +63,8 @@ Elementos no implementados todavía en el código:
 | FechaCreacion | `DateTime` | Fecha de creación inicializada en UTC |
 | FechaVencimiento | `DateTime?` | Fecha límite opcional |
 | Notas | `string?` | Texto libre opcional |
+| CategoriaId | `int?` | Identificador opcional de la categoría asociada |
+| Categoria | `Categoria?` | Navegación hacia la categoría asignada |
 
 ```csharp
 using System;
@@ -84,6 +87,41 @@ public class Tarea
         public DateTime? FechaVencimiento { get; set; }
 
         public string? Notas { get; set; }
+
+        public int? CategoriaId { get; set; }
+
+        public Categoria? Categoria { get; set; }
+}
+```
+
+### Categoria
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| Id | `int` | Identificador de la categoría |
+| Nombre | `string` | Nombre visible de la categoría |
+| Color | `string` | Color asociado para representación visual |
+| Tareas | `ICollection<Tarea>` | Tareas asociadas a la categoría |
+
+```csharp
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace Backend.Models;
+
+public class Categoria
+{
+    public int Id { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string Nombre { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(20)]
+    public string Color { get; set; } = string.Empty;
+
+    public ICollection<Tarea> Tareas { get; set; } = new List<Tarea>();
 }
 ```
 
@@ -103,6 +141,8 @@ No hay endpoints implementados en el estado actual del código, porque no existe
 - **Validación declarativa en el dominio**: `Titulo` se define como obligatorio y con límite máximo de 200 caracteres mediante Data Annotations, reduciendo lógica manual repetitiva.
 - **Fecha de creación en UTC**: `FechaCreacion` se inicializa con `DateTime.UtcNow` para mantener consistencia temporal desde el origen de datos.
 - **Campos opcionales como anulables**: `FechaVencimiento` y `Notas` se modelan como opcionales para permitir tareas sin fecha límite ni notas.
+- **Clasificación visual por categoría**: se incorpora la entidad `Categoria` con `Nombre` y `Color` para habilitar taxonomía funcional y representación visual consistente.
+- **Relación de categorización**: `Tarea` incorpora `CategoriaId` y navegación `Categoria`, y `Categoria` expone la colección `Tareas` para representar la asociación en ambos sentidos.
 
 ## 7. Pendientes / Preguntas abiertas
 
