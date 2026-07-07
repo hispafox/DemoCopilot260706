@@ -1,6 +1,6 @@
 ---
 name: orquestador-skills
-description: 'Coordina y fuerza secuencias de ejecucion entre skills, con gates de control para evitar desalineaciones y aplicar cambios en el orden correcto.'
+description: 'Coordina y fuerza secuencias de ejecucion entre skills con gates de control para aplicar cambios en el orden correcto, incluyendo modelo, base de datos, logica de negocio, servicios y controladores.'
 argument-hint: 'Indica el cambio a realizar. El orquestador usa modo unico del curso, aplica la secuencia base segun alcance real y devuelve estado por pasos.'
 ---
 
@@ -24,9 +24,11 @@ Secuencia base recomendada en este repo:
 2. analisis-diseno
 3. validador-analisis-prd (opcional recomendado)
 4. modelo-aplicacion
-5. dtos-aplicacion (cuando el cambio alcanza contratos HTTP)
-6. servicios-aplicacion (cuando el cambio alcanza logica de aplicacion y orquestacion)
-7. controladores-api (cuando el cambio alcanza endpoints HTTP)
+5. base-datos-aplicacion (cuando el cambio alcanza persistencia, DbContext o migraciones)
+6. logica-negocio (cuando el cambio alcanza reglas y decisiones de dominio)
+7. dtos-aplicacion (cuando el cambio alcanza contratos HTTP)
+8. servicios-aplicacion (cuando el cambio alcanza logica de aplicacion y orquestacion)
+9. controladores-api (cuando el cambio alcanza endpoints HTTP)
 
 El objetivo es reducir errores por saltarse pasos, mantener trazabilidad y permitir orquestar tambien otras cadenas de skills cuando el curso lo requiera.
 
@@ -42,6 +44,7 @@ El objetivo es reducir errores por saltarse pasos, mantener trazabilidad y permi
 - Peticion del usuario y resultado esperado.
 - Secuencia objetivo de skills (al menos skill inicial y skill final).
 - Gates o validaciones obligatorias antes de avanzar de fase.
+- Guia comun de capas: .github/skills/guia-estilo-capas.md.
 - PRD del repo: documentacion/PRD.md (si existe).
 - Analisis tecnico: documentacion/analisis-diseno.md o documentacion/analisis-diseño.md (segun el nombre real en el repo).
 - Estado de infraestructura .NET: .csproj, .sln o .slnx, Program.cs, proyectos de pruebas y referencias NuGet si existen.
@@ -109,9 +112,11 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 - Si hay validacion recomendada, intentar ejecutarla; si falla por causa tecnica, continuar con nota de riesgo.
 - Si hay validacion obligatoria, no continuar al siguiente skill sin validacion completada.
 - Si un paso de la secuencia no aplica por alcance real, marcarlo como Omitido en el cierre y justificarlo brevemente.
+- Si el cambio alcanza persistencia o esquema, insertar base-datos-aplicacion despues de modelo-aplicacion y antes de logica-negocio.
 - Si el cambio alcanza contratos HTTP, no cerrar la cadena en modelo-aplicacion: continuar con dtos-aplicacion y despues controladores-api si hay impacto en endpoints.
-- Si el cambio alcanza logica de aplicacion, insertar servicios-aplicacion antes de controladores-api.
-- Si no existen servicios requeridos por controladores, priorizar servicios-aplicacion para crearlos y registrar su inyeccion en Program.cs antes de tocar endpoints.
+- Si el cambio alcanza reglas de dominio, insertar logica-negocio despues de modelo-aplicacion y antes de servicios-aplicacion.
+- Si el cambio alcanza logica de aplicacion, insertar servicios-aplicacion despues de logica-negocio y antes de controladores-api.
+- Si no existen servicios requeridos por controladores, priorizar servicios-aplicacion para crearlos y registrar su inyeccion en Program.cs antes de tocar endpoints, consumiendo la logica-negocio cuando aplique.
 
 ## Formato de salida sugerido
 
@@ -144,4 +149,4 @@ Usar una salida breve y trazable:
 
 ## Ejemplo de peticion
 
-'Aplica orquestador-skills con secuencia infraestructura-dotnet -> analisis-diseno -> validador-analisis-prd -> modelo-aplicacion -> dtos-aplicacion -> servicios-aplicacion -> controladores-api para agregar un cambio con impacto en contratos, servicios y endpoints API, con validacion PRD en modo obligatorio y reporte final por pasos.'
+'Aplica orquestador-skills con secuencia infraestructura-dotnet -> analisis-diseno -> validador-analisis-prd -> modelo-aplicacion -> base-datos-aplicacion -> logica-negocio -> dtos-aplicacion -> servicios-aplicacion -> controladores-api para agregar un cambio con impacto en persistencia, reglas de negocio, contratos, servicios y endpoints API, con validacion PRD en modo obligatorio y reporte final por pasos.'

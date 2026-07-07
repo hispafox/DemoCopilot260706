@@ -23,6 +23,7 @@ Crear o actualizar clases de modelo de dominio con cambios pequenos, claros y co
 - Instrucciones del proyecto: .github/copilot-instructions.md
 - Contexto funcional: README.md
 - Diseno tecnico actual: documentacion/analisis-diseno.md o documentacion/analisis-diseño.md
+- Guia comun de capas: .github/skills/guia-estilo-capas.md
 - Estado de infraestructura .NET: .csproj, .sln o .slnx, Program.cs, tests y referencias NuGet si existen
 - Modelo actual: una o varias clases en backend/Models
 - Peticion del usuario con el cambio solicitado

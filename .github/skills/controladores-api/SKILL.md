@@ -1,6 +1,6 @@
 ---
 name: controladores-api
-description: 'Crea o actualiza controladores de API ASP.NET Core segun el README, el analisis/diseno y las instrucciones del proyecto. Usalo al anadir endpoints CRUD, ajustar respuestas HTTP, alinear contratos o implementar controladores ligeros sin capas innecesarias.'
+description: 'Crea o actualiza controladores de API ASP.NET Core segun README, analisis/diseno e instrucciones del proyecto, manteniendolos ligeros y coordinados con servicios, logica de negocio y persistencia cuando aplique.'
 argument-hint: 'Indica si quieres crear o actualizar el controlador, que operaciones HTTP necesitas, que reglas de validacion o respuesta deben respetarse y si hay impacto en contratos, persistencia, pruebas o documentacion.'
 ---
 
@@ -23,6 +23,7 @@ Crear o actualizar controladores de API ASP.NET Core pequenos, claros y coherent
 - Instrucciones del proyecto: .github/copilot-instructions.md
 - Contexto funcional: README.md
 - Diseno tecnico actual: documentacion/analisis-diseno.md o documentacion/analisis-diseño.md
+- Guia comun de capas: .github/skills/guia-estilo-capas.md
 - Estado real del backend: backend/Controllers, backend/Models, backend/Data, Program.cs, archivos .csproj y contratos relacionados
 - Peticion del usuario con las operaciones HTTP o cambios solicitados
 
