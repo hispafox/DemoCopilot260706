@@ -32,6 +32,20 @@ Accept: {{json}}
   "titulo": "   ",
   "estaCompletada": false,
   "notas": "Debe fallar por titulo vacío tras trim",
+  "prioridad": 2,
+  "esRepetitiva": false
+}
+
+### Actualizar tarea inexistente (error esperado 404)
+PUT {{host}}/api/tareas/999999
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "Actualizar prioridad",
+  "estaCompletada": false,
+  "notas": "Ejemplo de contrato completo",
+  "prioridad": 3,
   "esRepetitiva": false
 }
 

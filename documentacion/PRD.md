@@ -7,6 +7,7 @@ Este PRD define el alcance de producto para una aplicacion web de gestion de tar
 La solucion debe permitir crear, listar, actualizar y eliminar tareas, e incluir dos capacidades diferenciales para el curso:
 - plantillas reutilizables
 - tareas repetitivas con generacion automatica de la siguiente ocurrencia al completar
+- priorizacion funcional de tareas (Baja, Normal, Alta, Urgente)
 
 Este documento define el que y el por que del producto.
 El como tecnico se detalla en el anexo de analisis y diseno.
@@ -46,6 +47,7 @@ Problemas concretos:
 ### 5.1 Incluido en v1
 - Gestion de tareas: alta, consulta, edicion y borrado.
 - Estado completada/no completada.
+- Priorizacion de tareas con niveles Baja, Normal, Alta y Urgente.
 - Plantillas: CRUD e instanciacion de tarea desde plantilla.
 - Recurrencia basica: diaria, semanal y mensual.
 - Endpoint explicito para completar tareas con efecto secundario de generacion de siguiente ocurrencia.
@@ -89,6 +91,14 @@ Criterios de aceptacion:
 - Instanciar una plantilla existente crea una nueva tarea con valores derivados.
 - Instanciar una plantilla inexistente responde no encontrado.
 
+### RF-05 Prioridades de tarea
+El sistema debe permitir asignar y actualizar la prioridad de una tarea.
+
+Criterios de aceptacion:
+- Una tarea admite unicamente los valores de prioridad: Baja, Normal, Alta y Urgente.
+- Si no se informa prioridad en una creacion valida, se aplica el valor por defecto Normal.
+- La prioridad se conserva en lectura, actualizacion y operaciones derivadas de recurrencia.
+
 ## 7. Reglas de negocio
 
 - RN-01: El titulo de una tarea es obligatorio. No se permite crear ni actualizar tareas con titulo vacio tras aplicar trim de espacios en extremos.
@@ -103,6 +113,8 @@ Criterios de aceptacion:
 - RN-10: La asociacion entre tarea y plantilla es opcional; una tarea puede existir sin plantilla origen.
 - RN-11: Al eliminar una plantilla, las tareas ya creadas desde ella deben conservarse.
 - RN-12: La recurrencia solo se materializa al completar la tarea; no existe generacion automatica por tiempo en v1.
+- RN-13: La prioridad valida de una tarea solo puede ser una de estas opciones: Baja, Normal, Alta o Urgente.
+- RN-14: Si no se especifica prioridad al crear una tarea, el sistema asigna Normal por defecto.
 
 ## 8. Requisitos no funcionales
 
@@ -154,7 +166,7 @@ Mitigaciones:
 ## 12. Criterio de salida de v1
 
 Se considera v1 completada cuando:
-- Todos los requisitos funcionales RF-01 a RF-04 cumplen sus criterios de aceptacion.
+- Todos los requisitos funcionales RF-01 a RF-05 cumplen sus criterios de aceptacion.
 - No hay defectos criticos abiertos en flujos principales.
 - La demo puede ejecutarse y explicarse de forma consistente durante una sesion de curso.
 

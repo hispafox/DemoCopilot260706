@@ -58,6 +58,8 @@ Elementos relacionados que pueden requerir actualizacion si el cambio tiene impa
 	- ubicarlo en backend junto al proyecto (por ejemplo `backend/Backend.Api.http`)
 	- incluir variables base (`@host`) y ejemplos por endpoint cambiado
 	- cubrir al menos caso OK y un caso de error representativo (por ejemplo 404 o validacion)
+	- si se anade o cambia una propiedad en request/DTO, actualizar todos los payloads relevantes del `.http` (POST/PUT/PATCH) para reflejar el contrato vigente
+	- evitar payloads parciales desactualizados: los ejemplos del `.http` deben representar el contrato completo esperado en ese endpoint
 9. Verificar coherencia de puertos entre `backend/Properties/launchSettings.json` y el archivo `.http`:
 	- usar como referencia `applicationUrl` del perfil activo (HTTP o HTTPS segun proceda)
 	- alinear `@host` en `backend/Backend.Api.http` con el puerto real para evitar errores de envio de solicitud
@@ -92,6 +94,7 @@ Reglas de contrato HTTP:
 - Usar validacion integrada del framework antes que parseos manuales.
 - Devolver errores de validacion claros y predecibles.
 - Devolver NotFound solo cuando corresponda semantica y funcionalmente.
+- Si cambia un contrato de entrada/salida, el archivo `.http` debe quedar sincronizado en la misma tarea con ejemplos actualizados para esa propiedad.
 
 Reglas de diseno del codigo:
 
@@ -116,6 +119,7 @@ Reglas de validacion final:
 - Si hay impacto observable, las pruebas y la documentacion tecnica quedan actualizadas.
 - Si hay cambios en endpoints, existe archivo `.http` actualizado con ejemplos minimos para validacion manual.
 - Si hay cambios en endpoints, existe archivo `.http` actualizado y alineado con el puerto real configurado en `launchSettings.json`.
+- Si se agregan propiedades nuevas en contratos, el `.http` incluye esas propiedades en los ejemplos OK y en los escenarios de actualizacion aplicables.
 - El resultado no presupone infraestructura inexistente: compila si el proyecto existe y queda explicitamente limitado si el proyecto aun no existe.
 
 ## Que evitar
