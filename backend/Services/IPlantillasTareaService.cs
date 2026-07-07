@@ -1,17 +1,18 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Backend.Contracts;
 
 namespace Backend.Services;
 
 public interface IPlantillasTareaService
 {
-    IReadOnlyList<PlantillaTareaDto> ObtenerTodas();
+    Task<IReadOnlyList<PlantillaTareaDto>> ObtenerTodasAsync();
 
-    PlantillaTareaDto? ObtenerPorId(int id);
+    Task<PlantillaTareaDto?> ObtenerPorIdAsync(int id);
 
-    PlantillaTareaDto Crear(CrearActualizarPlantillaTareaRequest plantilla);
+    Task<PlantillaTareaDto> CrearAsync(CrearActualizarPlantillaTareaRequest plantilla);
 
-    PlantillaTareaDto? Actualizar(int id, CrearActualizarPlantillaTareaRequest plantillaActualizada);
+    Task<PlantillaTareaDto?> ActualizarAsync(int id, CrearActualizarPlantillaTareaRequest plantillaActualizada);
 
-    bool Eliminar(int id);
+    Task<bool> EliminarAsync(int id);
 }

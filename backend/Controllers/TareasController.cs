@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Backend.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Services;
@@ -18,60 +19,60 @@ public class TareasController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<TareaDto>> ObtenerTodas()
+    public async Task<ActionResult<IEnumerable<TareaDto>>> ObtenerTodas()
     {
-        return Ok(_tareasService.ObtenerTodas());
+        return Ok(await _tareasService.ObtenerTodasAsync());
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<TareaDto> ObtenerPorId(int id)
+    public async Task<ActionResult<TareaDto>> ObtenerPorId(int id)
     {
-        var tarea = _tareasService.ObtenerPorId(id);
+        var tarea = await _tareasService.ObtenerPorIdAsync(id);
         return tarea is null ? NotFound() : Ok(tarea);
     }
 
     [HttpPost]
-    public ActionResult<TareaDto> Crear([FromBody] CrearActualizarTareaRequest tarea)
+    public async Task<ActionResult<TareaDto>> Crear([FromBody] CrearActualizarTareaRequest tarea)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        var nuevaTarea = _tareasService.Crear(tarea);
+        var nuevaTarea = await _tareasService.CrearAsync(tarea);
         return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaTarea.Id }, nuevaTarea);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<TareaDto> Actualizar(int id, [FromBody] CrearActualizarTareaRequest tareaActualizada)
+    public async Task<ActionResult<TareaDto>> Actualizar(int id, [FromBody] CrearActualizarTareaRequest tareaActualizada)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        var tarea = _tareasService.Actualizar(id, tareaActualizada);
+        var tarea = await _tareasService.ActualizarAsync(id, tareaActualizada);
         return tarea is null ? NotFound() : Ok(tarea);
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult Eliminar(int id)
+    public async Task<IActionResult> Eliminar(int id)
     {
-        var eliminada = _tareasService.Eliminar(id);
+        var eliminada = await _tareasService.EliminarAsync(id);
         return eliminada ? NoContent() : NotFound();
     }
 
     [HttpPost("{id:int}/completar")]
-    public ActionResult<TareaDto> Completar(int id)
+    public async Task<ActionResult<TareaDto>> Completar(int id)
     {
-        var tarea = _tareasService.Completar(id);
+        var tarea = await _tareasService.CompletarAsync(id);
         return tarea is null ? NotFound() : Ok(tarea);
     }
 
     [HttpPost("desde-plantilla/{plantillaId:int}")]
-    public ActionResult<TareaDto> CrearDesdePlantilla(int plantillaId)
+    public async Task<ActionResult<TareaDto>> CrearDesdePlantilla(int plantillaId)
     {
-        var nuevaTarea = _tareasService.CrearDesdePlantilla(plantillaId);
+        var nuevaTarea = await _tareasService.CrearDesdePlantillaAsync(plantillaId);
         if (nuevaTarea is null)
         {
             return NotFound();

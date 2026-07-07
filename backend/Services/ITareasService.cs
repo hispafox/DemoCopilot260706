@@ -1,21 +1,22 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Backend.Contracts;
 
 namespace Backend.Services;
 
 public interface ITareasService
 {
-    IReadOnlyList<TareaDto> ObtenerTodas();
+    Task<IReadOnlyList<TareaDto>> ObtenerTodasAsync();
 
-    TareaDto? ObtenerPorId(int id);
+    Task<TareaDto?> ObtenerPorIdAsync(int id);
 
-    TareaDto Crear(CrearActualizarTareaRequest tarea);
+    Task<TareaDto> CrearAsync(CrearActualizarTareaRequest tarea);
 
-    TareaDto? Actualizar(int id, CrearActualizarTareaRequest tareaActualizada);
+    Task<TareaDto?> ActualizarAsync(int id, CrearActualizarTareaRequest tareaActualizada);
 
-    bool Eliminar(int id);
+    Task<bool> EliminarAsync(int id);
 
-    TareaDto? Completar(int id);
+    Task<TareaDto?> CompletarAsync(int id);
 
-    TareaDto? CrearDesdePlantilla(int plantillaId);
+    Task<TareaDto?> CrearDesdePlantillaAsync(int plantillaId);
 }

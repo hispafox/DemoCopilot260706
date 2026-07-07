@@ -1,34 +1,61 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Backend.Contracts;
+using Backend.Data;
 using Backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services;
 
 public class PlantillasTareaService : IPlantillasTareaService
 {
-    public IReadOnlyList<PlantillaTareaDto> ObtenerTodas()
+    private readonly ApplicationDbContext _dbContext;
+
+    public PlantillasTareaService(ApplicationDbContext dbContext)
     {
-        lock (InMemoryStore.SyncRoot)
-        {
-            return InMemoryStore.Plantillas.Select(Mapear).ToList();
-        }
+        _dbContext = dbContext;
     }
 
-    public PlantillaTareaDto? ObtenerPorId(int id)
+    public async Task<IReadOnlyList<PlantillaTareaDto>> ObtenerTodasAsync()
     {
-        lock (InMemoryStore.SyncRoot)
-        {
-            var plantilla = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == id);
-            return plantilla is null ? null : Mapear(plantilla);
-        }
+        return await _dbContext.PlantillasTarea
+            .AsNoTracking()
+            .Select(plantilla => new PlantillaTareaDto
+            {
+                Id = plantilla.Id,
+                Titulo = plantilla.Titulo,
+                Notas = plantilla.Notas,
+                EsRepetitiva = plantilla.EsRepetitiva,
+                TipoRecurrencia = plantilla.TipoRecurrencia,
+                CategoriaId = plantilla.CategoriaId,
+                EstaActiva = plantilla.EstaActiva
+            })
+            .ToListAsync();
     }
 
-    public PlantillaTareaDto Crear(CrearActualizarPlantillaTareaRequest plantilla)
+    public async Task<PlantillaTareaDto?> ObtenerPorIdAsync(int id)
+    {
+        return await _dbContext.PlantillasTarea
+            .AsNoTracking()
+            .Where(item => item.Id == id)
+            .Select(plantilla => new PlantillaTareaDto
+            {
+                Id = plantilla.Id,
+                Titulo = plantilla.Titulo,
+                Notas = plantilla.Notas,
+                EsRepetitiva = plantilla.EsRepetitiva,
+                TipoRecurrencia = plantilla.TipoRecurrencia,
+                CategoriaId = plantilla.CategoriaId,
+                EstaActiva = plantilla.EstaActiva
+            })
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<PlantillaTareaDto> CrearAsync(CrearActualizarPlantillaTareaRequest plantilla)
     {
         var nuevaPlantilla = new PlantillaTarea
         {
-            Id = InMemoryStore.ObtenerSiguientePlantillaId(),
             Titulo = plantilla.Titulo,
             Notas = plantilla.Notas,
             EsRepetitiva = plantilla.EsRepetitiva,
@@ -37,54 +64,51 @@ public class PlantillasTareaService : IPlantillasTareaService
             EstaActiva = plantilla.EstaActiva
         };
 
-        lock (InMemoryStore.SyncRoot)
-        {
-            InMemoryStore.Plantillas.Add(nuevaPlantilla);
-            return Mapear(nuevaPlantilla);
-        }
+        _dbContext.PlantillasTarea.Add(nuevaPlantilla);
+        await _dbContext.SaveChangesAsync();
+        return Mapear(nuevaPlantilla);
     }
 
-    public PlantillaTareaDto? Actualizar(int id, CrearActualizarPlantillaTareaRequest plantillaActualizada)
+    public async Task<PlantillaTareaDto?> ActualizarAsync(int id, CrearActualizarPlantillaTareaRequest plantillaActualizada)
     {
-        lock (InMemoryStore.SyncRoot)
+        var plantillaExistente = await _dbContext.PlantillasTarea.FirstOrDefaultAsync(item => item.Id == id);
+        if (plantillaExistente is null)
         {
-            var plantillaExistente = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == id);
-            if (plantillaExistente is null)
-            {
-                return null;
-            }
-
-            plantillaExistente.Titulo = plantillaActualizada.Titulo;
-            plantillaExistente.Notas = plantillaActualizada.Notas;
-            plantillaExistente.EsRepetitiva = plantillaActualizada.EsRepetitiva;
-            plantillaExistente.TipoRecurrencia = plantillaActualizada.TipoRecurrencia;
-            plantillaExistente.CategoriaId = plantillaActualizada.CategoriaId;
-            plantillaExistente.EstaActiva = plantillaActualizada.EstaActiva;
-
-            return Mapear(plantillaExistente);
+            return null;
         }
+
+        plantillaExistente.Titulo = plantillaActualizada.Titulo;
+        plantillaExistente.Notas = plantillaActualizada.Notas;
+        plantillaExistente.EsRepetitiva = plantillaActualizada.EsRepetitiva;
+        plantillaExistente.TipoRecurrencia = plantillaActualizada.TipoRecurrencia;
+        plantillaExistente.CategoriaId = plantillaActualizada.CategoriaId;
+        plantillaExistente.EstaActiva = plantillaActualizada.EstaActiva;
+
+        await _dbContext.SaveChangesAsync();
+        return Mapear(plantillaExistente);
     }
 
-    public bool Eliminar(int id)
+    public async Task<bool> EliminarAsync(int id)
     {
-        lock (InMemoryStore.SyncRoot)
+        var plantillaExistente = await _dbContext.PlantillasTarea.FirstOrDefaultAsync(item => item.Id == id);
+        if (plantillaExistente is null)
         {
-            var plantillaExistente = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == id);
-            if (plantillaExistente is null)
-            {
-                return false;
-            }
-
-            InMemoryStore.Plantillas.Remove(plantillaExistente);
-
-            foreach (var tarea in InMemoryStore.Tareas.Where(item => item.PlantillaTareaId == id))
-            {
-                tarea.PlantillaTareaId = null;
-                tarea.PlantillaTarea = null;
-            }
-
-            return true;
+            return false;
         }
+
+        var tareasAsociadas = await _dbContext.Tareas
+            .Where(item => item.PlantillaTareaId == id)
+            .ToListAsync();
+
+        foreach (var tarea in tareasAsociadas)
+        {
+            tarea.PlantillaTareaId = null;
+            tarea.PlantillaTarea = null;
+        }
+
+        _dbContext.PlantillasTarea.Remove(plantillaExistente);
+        await _dbContext.SaveChangesAsync();
+        return true;
     }
 
     private static PlantillaTareaDto Mapear(PlantillaTarea plantilla)

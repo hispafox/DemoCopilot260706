@@ -63,9 +63,8 @@ Reglas de diseño aplicadas y observables en código actual:
 
 Elementos no implementados todavía en el código:
 
-- No existe `DbContext` en `backend/Data`.
-- No existen servicios en `backend/Services`.
 - No existe frontend en `frontend/`.
+- No existe proyecto de pruebas automatizadas para validar reglas de negocio y comportamiento HTTP.
 
 ## 4. Modelo de datos
 

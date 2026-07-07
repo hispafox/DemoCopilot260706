@@ -1,38 +1,73 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Backend.Contracts;
+using Backend.Data;
 using Backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services;
 
 public class TareasService : ITareasService
 {
-    public IReadOnlyList<TareaDto> ObtenerTodas()
+    private readonly ApplicationDbContext _dbContext;
+
+    public TareasService(ApplicationDbContext dbContext)
     {
-        lock (InMemoryStore.SyncRoot)
-        {
-            return InMemoryStore.Tareas
-                .OrderByDescending(tarea => tarea.FechaCreacion)
-                .Select(Mapear)
-                .ToList();
-        }
+        _dbContext = dbContext;
     }
 
-    public TareaDto? ObtenerPorId(int id)
+    public async Task<IReadOnlyList<TareaDto>> ObtenerTodasAsync()
     {
-        lock (InMemoryStore.SyncRoot)
-        {
-            var tarea = InMemoryStore.Tareas.FirstOrDefault(item => item.Id == id);
-            return tarea is null ? null : Mapear(tarea);
-        }
+        return await _dbContext.Tareas
+            .AsNoTracking()
+            .OrderByDescending(tarea => tarea.FechaCreacion)
+            .Select(tarea => new TareaDto
+            {
+                Id = tarea.Id,
+                Titulo = tarea.Titulo,
+                EstaCompletada = tarea.EstaCompletada,
+                FechaCreacion = tarea.FechaCreacion,
+                FechaVencimiento = tarea.FechaVencimiento,
+                Notas = tarea.Notas,
+                Prioridad = tarea.Prioridad,
+                EsRepetitiva = tarea.EsRepetitiva,
+                TipoRecurrencia = tarea.TipoRecurrencia,
+                ProximaRecurrencia = tarea.ProximaRecurrencia,
+                PlantillaTareaId = tarea.PlantillaTareaId,
+                CategoriaId = tarea.CategoriaId
+            })
+            .ToListAsync();
     }
 
-    public TareaDto Crear(CrearActualizarTareaRequest tarea)
+    public async Task<TareaDto?> ObtenerPorIdAsync(int id)
+    {
+        return await _dbContext.Tareas
+            .AsNoTracking()
+            .Where(item => item.Id == id)
+            .Select(tarea => new TareaDto
+            {
+                Id = tarea.Id,
+                Titulo = tarea.Titulo,
+                EstaCompletada = tarea.EstaCompletada,
+                FechaCreacion = tarea.FechaCreacion,
+                FechaVencimiento = tarea.FechaVencimiento,
+                Notas = tarea.Notas,
+                Prioridad = tarea.Prioridad,
+                EsRepetitiva = tarea.EsRepetitiva,
+                TipoRecurrencia = tarea.TipoRecurrencia,
+                ProximaRecurrencia = tarea.ProximaRecurrencia,
+                PlantillaTareaId = tarea.PlantillaTareaId,
+                CategoriaId = tarea.CategoriaId
+            })
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<TareaDto> CrearAsync(CrearActualizarTareaRequest tarea)
     {
         var nuevaTarea = new Tarea
         {
-            Id = InMemoryStore.ObtenerSiguienteTareaId(),
             Titulo = tarea.Titulo,
             EstaCompletada = tarea.EstaCompletada,
             FechaCreacion = DateTime.UtcNow,
@@ -46,119 +81,103 @@ public class TareasService : ITareasService
             CategoriaId = tarea.CategoriaId
         };
 
-        lock (InMemoryStore.SyncRoot)
+        if (nuevaTarea.PlantillaTareaId is int plantillaId)
         {
-            if (nuevaTarea.PlantillaTareaId is int plantillaId)
-            {
-                nuevaTarea.PlantillaTarea = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == plantillaId);
-            }
-
-            InMemoryStore.Tareas.Add(nuevaTarea);
-            return Mapear(nuevaTarea);
+            nuevaTarea.PlantillaTarea = await _dbContext.PlantillasTarea
+                .FirstOrDefaultAsync(item => item.Id == plantillaId);
         }
+
+        _dbContext.Tareas.Add(nuevaTarea);
+        await _dbContext.SaveChangesAsync();
+        return Mapear(nuevaTarea);
     }
 
-    public TareaDto? Actualizar(int id, CrearActualizarTareaRequest tareaActualizada)
+    public async Task<TareaDto?> ActualizarAsync(int id, CrearActualizarTareaRequest tareaActualizada)
     {
-        lock (InMemoryStore.SyncRoot)
+        var tareaExistente = await _dbContext.Tareas.FirstOrDefaultAsync(item => item.Id == id);
+        if (tareaExistente is null)
         {
-            var tareaExistente = InMemoryStore.Tareas.FirstOrDefault(item => item.Id == id);
-            if (tareaExistente is null)
-            {
-                return null;
-            }
+            return null;
+        }
 
-            tareaExistente.Titulo = tareaActualizada.Titulo;
-            tareaExistente.EstaCompletada = tareaActualizada.EstaCompletada;
-            tareaExistente.FechaVencimiento = tareaActualizada.FechaVencimiento;
-            tareaExistente.Notas = tareaActualizada.Notas;
-            tareaExistente.Prioridad = tareaActualizada.Prioridad;
-            tareaExistente.EsRepetitiva = tareaActualizada.EsRepetitiva;
-            tareaExistente.TipoRecurrencia = tareaActualizada.TipoRecurrencia;
-            tareaExistente.ProximaRecurrencia = tareaActualizada.ProximaRecurrencia;
-            tareaExistente.PlantillaTareaId = tareaActualizada.PlantillaTareaId;
-            tareaExistente.PlantillaTarea = tareaActualizada.PlantillaTareaId is int plantillaId
-                ? InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == plantillaId)
-                : null;
-            tareaExistente.CategoriaId = tareaActualizada.CategoriaId;
+        tareaExistente.Titulo = tareaActualizada.Titulo;
+        tareaExistente.EstaCompletada = tareaActualizada.EstaCompletada;
+        tareaExistente.FechaVencimiento = tareaActualizada.FechaVencimiento;
+        tareaExistente.Notas = tareaActualizada.Notas;
+        tareaExistente.Prioridad = tareaActualizada.Prioridad;
+        tareaExistente.EsRepetitiva = tareaActualizada.EsRepetitiva;
+        tareaExistente.TipoRecurrencia = tareaActualizada.TipoRecurrencia;
+        tareaExistente.ProximaRecurrencia = tareaActualizada.ProximaRecurrencia;
+        tareaExistente.PlantillaTareaId = tareaActualizada.PlantillaTareaId;
+        tareaExistente.CategoriaId = tareaActualizada.CategoriaId;
 
+        await _dbContext.SaveChangesAsync();
+        return Mapear(tareaExistente);
+    }
+
+    public async Task<bool> EliminarAsync(int id)
+    {
+        var tareaExistente = await _dbContext.Tareas.FirstOrDefaultAsync(item => item.Id == id);
+        if (tareaExistente is null)
+        {
+            return false;
+        }
+
+        _dbContext.Tareas.Remove(tareaExistente);
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<TareaDto?> CompletarAsync(int id)
+    {
+        var tareaExistente = await _dbContext.Tareas.FirstOrDefaultAsync(item => item.Id == id);
+        if (tareaExistente is null)
+        {
+            return null;
+        }
+
+        if (tareaExistente.EstaCompletada)
+        {
             return Mapear(tareaExistente);
         }
-    }
 
-    public bool Eliminar(int id)
-    {
-        lock (InMemoryStore.SyncRoot)
+        tareaExistente.EstaCompletada = true;
+
+        if (tareaExistente.EsRepetitiva && tareaExistente.TipoRecurrencia is not null)
         {
-            var tareaExistente = InMemoryStore.Tareas.FirstOrDefault(item => item.Id == id);
-            if (tareaExistente is null)
-            {
-                return false;
-            }
-
-            InMemoryStore.Tareas.Remove(tareaExistente);
-            return true;
-        }
-    }
-
-    public TareaDto? Completar(int id)
-    {
-        lock (InMemoryStore.SyncRoot)
-        {
-            var tareaExistente = InMemoryStore.Tareas.FirstOrDefault(item => item.Id == id);
-            if (tareaExistente is null)
-            {
-                return null;
-            }
-
-            if (tareaExistente.EstaCompletada)
-            {
-                return Mapear(tareaExistente);
-            }
-
-            tareaExistente.EstaCompletada = true;
-
-            if (!tareaExistente.EsRepetitiva || tareaExistente.TipoRecurrencia is null)
-            {
-                return Mapear(tareaExistente);
-            }
-
             var siguiente = CrearSiguienteOcurrencia(tareaExistente);
-            InMemoryStore.Tareas.Add(siguiente);
-
-            return Mapear(tareaExistente);
+            _dbContext.Tareas.Add(siguiente);
         }
+
+        await _dbContext.SaveChangesAsync();
+        return Mapear(tareaExistente);
     }
 
-    public TareaDto? CrearDesdePlantilla(int plantillaId)
+    public async Task<TareaDto?> CrearDesdePlantillaAsync(int plantillaId)
     {
-        lock (InMemoryStore.SyncRoot)
+        var plantilla = await _dbContext.PlantillasTarea.FirstOrDefaultAsync(item => item.Id == plantillaId);
+        if (plantilla is null)
         {
-            var plantilla = InMemoryStore.Plantillas.FirstOrDefault(item => item.Id == plantillaId);
-            if (plantilla is null)
-            {
-                return null;
-            }
-
-            var nuevaTarea = new Tarea
-            {
-                Id = InMemoryStore.ObtenerSiguienteTareaId(),
-                Titulo = plantilla.Titulo,
-                EstaCompletada = false,
-                FechaCreacion = DateTime.UtcNow,
-                Notas = plantilla.Notas,
-                Prioridad = PrioridadTarea.Normal,
-                EsRepetitiva = plantilla.EsRepetitiva,
-                TipoRecurrencia = plantilla.TipoRecurrencia,
-                PlantillaTareaId = plantilla.Id,
-                PlantillaTarea = plantilla,
-                CategoriaId = plantilla.CategoriaId,
-                ProximaRecurrencia = ObtenerPrimeraRecurrencia(plantilla.TipoRecurrencia)
-            };
-
-            InMemoryStore.Tareas.Add(nuevaTarea);
-            return Mapear(nuevaTarea);
+            return null;
         }
+
+        var nuevaTarea = new Tarea
+        {
+            Titulo = plantilla.Titulo,
+            EstaCompletada = false,
+            FechaCreacion = DateTime.UtcNow,
+            Notas = plantilla.Notas,
+            Prioridad = PrioridadTarea.Normal,
+            EsRepetitiva = plantilla.EsRepetitiva,
+            TipoRecurrencia = plantilla.TipoRecurrencia,
+            PlantillaTareaId = plantilla.Id,
+            CategoriaId = plantilla.CategoriaId,
+            ProximaRecurrencia = plantilla.EsRepetitiva ? ObtenerPrimeraRecurrencia(plantilla.TipoRecurrencia) : null
+        };
+
+        _dbContext.Tareas.Add(nuevaTarea);
+        await _dbContext.SaveChangesAsync();
+        return Mapear(nuevaTarea);
     }
 
     private static TareaDto Mapear(Tarea tarea)
@@ -184,7 +203,6 @@ public class TareasService : ITareasService
     {
         return new Tarea
         {
-            Id = InMemoryStore.ObtenerSiguienteTareaId(),
             Titulo = tareaOrigen.Titulo,
             EstaCompletada = false,
             FechaCreacion = DateTime.UtcNow,

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Backend.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Services;
@@ -18,46 +19,46 @@ public class PlantillasTareaController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<PlantillaTareaDto>> ObtenerTodas()
+    public async Task<ActionResult<IEnumerable<PlantillaTareaDto>>> ObtenerTodas()
     {
-        return Ok(_plantillasTareaService.ObtenerTodas());
+        return Ok(await _plantillasTareaService.ObtenerTodasAsync());
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<PlantillaTareaDto> ObtenerPorId(int id)
+    public async Task<ActionResult<PlantillaTareaDto>> ObtenerPorId(int id)
     {
-        var plantilla = _plantillasTareaService.ObtenerPorId(id);
+        var plantilla = await _plantillasTareaService.ObtenerPorIdAsync(id);
         return plantilla is null ? NotFound() : Ok(plantilla);
     }
 
     [HttpPost]
-    public ActionResult<PlantillaTareaDto> Crear([FromBody] CrearActualizarPlantillaTareaRequest plantilla)
+    public async Task<ActionResult<PlantillaTareaDto>> Crear([FromBody] CrearActualizarPlantillaTareaRequest plantilla)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        var nuevaPlantilla = _plantillasTareaService.Crear(plantilla);
+        var nuevaPlantilla = await _plantillasTareaService.CrearAsync(plantilla);
         return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaPlantilla.Id }, nuevaPlantilla);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<PlantillaTareaDto> Actualizar(int id, [FromBody] CrearActualizarPlantillaTareaRequest plantillaActualizada)
+    public async Task<ActionResult<PlantillaTareaDto>> Actualizar(int id, [FromBody] CrearActualizarPlantillaTareaRequest plantillaActualizada)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        var plantilla = _plantillasTareaService.Actualizar(id, plantillaActualizada);
+        var plantilla = await _plantillasTareaService.ActualizarAsync(id, plantillaActualizada);
         return plantilla is null ? NotFound() : Ok(plantilla);
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult Eliminar(int id)
+    public async Task<IActionResult> Eliminar(int id)
     {
-        var eliminada = _plantillasTareaService.Eliminar(id);
+        var eliminada = await _plantillasTareaService.EliminarAsync(id);
         return eliminada ? NoContent() : NotFound();
     }
 }
