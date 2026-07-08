@@ -522,6 +522,11 @@ agents/
 └── ... otros agentes
 
 skills/
+├── README.md
+├── base-datos-aplicacion/
+│   └── SKILL.md
+└── ... otros skills
+```
 ├── AGENTS.md                    (Registro de skills)
 └── */SKILL.md                   (Cada skill con su doc)
 ```
