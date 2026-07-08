@@ -8,6 +8,7 @@ La solucion debe permitir crear, listar, actualizar y eliminar tareas, e incluir
 - plantillas reutilizables
 - tareas repetitivas con generacion automatica de la siguiente ocurrencia al completar
 - priorizacion funcional de tareas (Baja, Normal, Alta, Urgente)
+- gestion de usuarios y departamentos
 
 Este documento define el que y el por que del producto.
 El como tecnico se detalla en el anexo de analisis y diseno.
@@ -50,6 +51,7 @@ Problemas concretos:
 - Priorizacion de tareas con niveles Baja, Normal, Alta y Urgente.
 - Plantillas: CRUD e instanciacion de tarea desde plantilla.
 - Recurrencia basica: diaria, semanal y mensual.
+- Gestion de usuarios y departamentos, con pertenencia obligatoria de cada usuario a un departamento.
 - Endpoint explicito para completar tareas con efecto secundario de generacion de siguiente ocurrencia.
 
 ### 5.2 Fuera de alcance en v1
@@ -99,6 +101,14 @@ Criterios de aceptacion:
 - Si no se informa prioridad en una creacion valida, se aplica el valor por defecto Normal.
 - La prioridad se conserva en lectura, actualizacion y operaciones derivadas de recurrencia.
 
+### RF-06 Gestion de departamentos y usuarios
+El sistema debe permitir crear, listar, actualizar y eliminar departamentos, y gestionar usuarios asociados a un departamento.
+
+Criterios de aceptacion:
+- Cada usuario debe pertenecer obligatoriamente a un departamento valido.
+- Crear o actualizar un usuario con departamento inexistente devuelve error de validacion.
+- No se puede eliminar un departamento que tenga usuarios asociados.
+
 ## 7. Reglas de negocio
 
 - RN-01: El titulo de una tarea es obligatorio. No se permite crear ni actualizar tareas con titulo vacio tras aplicar trim de espacios en extremos.
@@ -115,6 +125,8 @@ Criterios de aceptacion:
 - RN-12: La recurrencia solo se materializa al completar la tarea; no existe generacion automatica por tiempo en v1.
 - RN-13: La prioridad valida de una tarea solo puede ser una de estas opciones: Baja, Normal, Alta o Urgente.
 - RN-14: Si no se especifica prioridad al crear una tarea, el sistema asigna Normal por defecto.
+- RN-15: Todo usuario debe pertenecer a un departamento existente.
+- RN-16: Un departamento con usuarios asociados no puede eliminarse.
 
 ## 8. Requisitos no funcionales
 

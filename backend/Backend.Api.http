@@ -1,6 +1,72 @@
 @host = http://localhost:55146
 @json = application/json
 
+### Listar departamentos
+GET {{host}}/api/departamentos
+Accept: {{json}}
+
+### Crear departamento (201)
+POST {{host}}/api/departamentos
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Producto"
+}
+
+### Obtener departamento inexistente (error esperado 404)
+GET {{host}}/api/departamentos/999999
+Accept: {{json}}
+
+### Crear departamento inválido (400)
+POST {{host}}/api/departamentos
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   "
+}
+
+### Listar usuarios
+GET {{host}}/api/usuarios
+Accept: {{json}}
+
+### Crear usuario (201)
+POST {{host}}/api/usuarios
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Usuario Demo",
+  "email": "usuario.demo@example.com",
+  "departamentoId": 1
+}
+
+### Obtener usuario inexistente (error esperado 404)
+GET {{host}}/api/usuarios/999999
+Accept: {{json}}
+
+### Crear usuario invalido (400)
+POST {{host}}/api/usuarios
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   ",
+  "departamentoId": 1
+}
+
+### Crear usuario con departamento inexistente (400)
+POST {{host}}/api/usuarios
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Usuario sin departamento válido",
+  "email": "usuario.invalido@example.com",
+  "departamentoId": 999999
+}
+
 ### Listar tareas (contrato DTO)
 GET {{host}}/api/tareas
 Accept: {{json}}
@@ -20,7 +86,8 @@ Accept: {{json}}
   "notas": "Creada desde Backend.Api.http",
   "prioridad": 4,
   "esRepetitiva": true,
-  "tipoRecurrencia": 1
+  "tipoRecurrencia": 1,
+  "usuarioId": 1
 }
 
 ### Crear tarea inválida (400)
@@ -33,7 +100,21 @@ Accept: {{json}}
   "estaCompletada": false,
   "notas": "Debe fallar por titulo vacío tras trim",
   "prioridad": 2,
-  "esRepetitiva": false
+  "esRepetitiva": false,
+  "usuarioId": null
+}
+
+### Crear tarea con usuario inexistente (error esperado 400)
+POST {{host}}/api/tareas
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "Tarea con usuario inválido",
+  "estaCompletada": false,
+  "prioridad": 2,
+  "esRepetitiva": false,
+  "usuarioId": 999999
 }
 
 ### Actualizar tarea inexistente (error esperado 404)
@@ -46,7 +127,8 @@ Accept: {{json}}
   "estaCompletada": false,
   "notas": "Ejemplo de contrato completo",
   "prioridad": 3,
-  "esRepetitiva": false
+  "esRepetitiva": false,
+  "usuarioId": 1
 }
 
 ### Completar tarea inexistente (error esperado 404)

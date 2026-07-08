@@ -3,6 +3,7 @@ using System;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708073227_AddUsuarioRelationToTarea")]
+    partial class AddUsuarioRelationToTarea
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -39,22 +42,6 @@ namespace Backend.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categorias");
-                });
-
-            modelBuilder.Entity("Backend.Models.Departamento", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departamentos");
                 });
 
             modelBuilder.Entity("Backend.Models.PlantillaTarea", b =>
@@ -151,9 +138,6 @@ namespace Backend.Api.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DepartamentoId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Email")
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
@@ -164,8 +148,6 @@ namespace Backend.Api.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartamentoId");
 
                     b.ToTable("Usuarios");
                 });
@@ -204,25 +186,9 @@ namespace Backend.Api.Data.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Backend.Models.Usuario", b =>
-                {
-                    b.HasOne("Backend.Models.Departamento", "Departamento")
-                        .WithMany("Usuarios")
-                        .HasForeignKey("DepartamentoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Departamento");
-                });
-
             modelBuilder.Entity("Backend.Models.Categoria", b =>
                 {
                     b.Navigation("Tareas");
-                });
-
-            modelBuilder.Entity("Backend.Models.Departamento", b =>
-                {
-                    b.Navigation("Usuarios");
                 });
 
             modelBuilder.Entity("Backend.Models.Usuario", b =>

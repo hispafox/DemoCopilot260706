@@ -15,6 +15,10 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Categoria> Categorias => Set<Categoria>();
 
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
+
+    public DbSet<Departamento> Departamentos => Set<Departamento>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -33,6 +37,11 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(t => t.PlantillaTareaId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(t => t.Usuario)
+                .WithMany(u => u.Tareas)
+                .HasForeignKey(t => t.UsuarioId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<PlantillaTarea>(entity =>
@@ -49,6 +58,22 @@ public class ApplicationDbContext : DbContext
         {
             entity.Property(c => c.Nombre).IsRequired().HasMaxLength(100);
             entity.Property(c => c.Color).IsRequired().HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<Usuario>(entity =>
+        {
+            entity.Property(u => u.Nombre).IsRequired().HasMaxLength(150);
+            entity.Property(u => u.Email).HasMaxLength(200);
+
+            entity.HasOne(u => u.Departamento)
+                .WithMany(d => d.Usuarios)
+                .HasForeignKey(u => u.DepartamentoId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Departamento>(entity =>
+        {
+            entity.Property(d => d.Nombre).IsRequired().HasMaxLength(100);
         });
     }
 }

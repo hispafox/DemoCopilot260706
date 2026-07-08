@@ -20,8 +20,9 @@ En el estado actual del código, la implementación está en fase inicial y ya i
 
 | Capa | Carpeta | Responsabilidad |
 |---|---|---|
-| API | `backend/Controllers` | Endpoints HTTP de tareas y plantillas |
+| API | `backend/Controllers` | Endpoints HTTP de tareas, plantillas y usuarios |
 | Contratos | `backend/Contracts` | DTOs de entrada y salida para la API |
+| Servicios | `backend/Services` | Orquestación de casos de uso y acceso a persistencia |
 | Dominio | `backend/Models` | Define entidades del negocio |
 | Arranque | `backend/Program.cs` | Configuración mínima de ASP.NET Core y mapeo de controladores |
 | Documentación | `documentacion` | PRD, análisis y guías operativas |
@@ -38,14 +39,23 @@ backend/
     Contracts/
         ApiContracts.cs
     Controllers/
-        InMemoryStore.cs
         PlantillasTareaController.cs
         TareasController.cs
+        UsuariosController.cs
+    Services/
+        IPlantillasTareaService.cs
+        ITareasService.cs
+        IUsuariosService.cs
+        PlantillasTareaService.cs
+        TareasService.cs
+        UsuariosService.cs
     Models/
         Categoria.cs
+        PrioridadTarea.cs
         PlantillaTarea.cs
         Tarea.cs
         TipoRecurrencia.cs
+        Usuario.cs
 documentacion/
     PRD.md
     analisis-diseño.md
@@ -86,6 +96,8 @@ Elementos no implementados todavía en el código:
 | PlantillaTarea | `PlantillaTarea?` | Navegación hacia la plantilla origen |
 | CategoriaId | `int?` | Identificador opcional de la categoría asociada |
 | Categoria | `Categoria?` | Navegación hacia la categoría asignada |
+| UsuarioId | `int?` | Identificador opcional del usuario asignado |
+| Usuario | `Usuario?` | Navegación hacia el usuario asignado |
 
 ```csharp
 using System;
@@ -125,8 +137,31 @@ public class Tarea
     public int? CategoriaId { get; set; }
 
     public Categoria? Categoria { get; set; }
+
+    public int? UsuarioId { get; set; }
+
+    public Usuario? Usuario { get; set; }
 }
 ```
+
+### Usuario
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| Id | `int` | Identificador del usuario |
+| Nombre | `string` | Nombre visible del usuario |
+| Email | `string?` | Email opcional del usuario |
+| DepartamentoId | `int` | Identificador obligatorio del departamento al que pertenece |
+| Departamento | `Departamento` | Navegación al departamento del usuario |
+| Tareas | `ICollection<Tarea>` | Tareas asignadas al usuario |
+
+### Departamento
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| Id | `int` | Identificador del departamento |
+| Nombre | `string` | Nombre visible del departamento |
+| Usuarios | `ICollection<Usuario>` | Usuarios que pertenecen al departamento |
 
 ### PlantillaTarea
 
@@ -238,7 +273,7 @@ public enum PrioridadTarea
 
 ## 5. Endpoints API REST
 
-La API REST está implementada actualmente con almacenamiento en memoria (`InMemoryStore`) y sin persistencia SQLite todavía.
+La API REST está implementada con persistencia en SQLite mediante Entity Framework Core.
 
 | Verbo | Ruta | Descripción | Respuesta OK | Error |
 |---|---|---|---|---|
@@ -254,6 +289,16 @@ La API REST está implementada actualmente con almacenamiento en memoria (`InMem
 | POST | `/api/plantillas` | Crea plantilla desde `CrearActualizarPlantillaTareaRequest` | `201 Created` | `400 ValidationProblem` |
 | PUT | `/api/plantillas/{id}` | Actualiza plantilla desde `CrearActualizarPlantillaTareaRequest` | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
 | DELETE | `/api/plantillas/{id}` | Elimina plantilla y desvincula tareas asociadas | `204 NoContent` | `404 Not Found` |
+| GET | `/api/usuarios` | Lista usuarios devolviendo `UsuarioDto` | `200 OK` | N/A |
+| GET | `/api/usuarios/{id}` | Obtiene usuario por id devolviendo `UsuarioDto` | `200 OK` | `404 Not Found` |
+| POST | `/api/usuarios` | Crea usuario desde `CrearActualizarUsuarioRequest` | `201 Created` | `400 ValidationProblem` |
+| PUT | `/api/usuarios/{id}` | Actualiza usuario desde `CrearActualizarUsuarioRequest` | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
+| DELETE | `/api/usuarios/{id}` | Elimina usuario | `204 NoContent` | `404 Not Found` |
+| GET | `/api/departamentos` | Lista departamentos devolviendo `DepartamentoDto` | `200 OK` | N/A |
+| GET | `/api/departamentos/{id}` | Obtiene departamento por id devolviendo `DepartamentoDto` | `200 OK` | `404 Not Found` |
+| POST | `/api/departamentos` | Crea departamento desde `CrearActualizarDepartamentoRequest` | `201 Created` | `400 ValidationProblem` |
+| PUT | `/api/departamentos/{id}` | Actualiza departamento desde `CrearActualizarDepartamentoRequest` | `200 OK` | `404 Not Found`, `400 ValidationProblem` |
+| DELETE | `/api/departamentos/{id}` | Elimina departamento si no tiene usuarios asociados | `204 NoContent` | `404 Not Found`, `409 Conflict` |
 
 ## 6. Decisiones de diseño
 
@@ -266,12 +311,13 @@ La API REST está implementada actualmente con almacenamiento en memoria (`InMem
 - **Relación de categorización**: `Tarea` incorpora `CategoriaId` y navegación `Categoria`, y `Categoria` expone la colección `Tareas` para representar la asociación en ambos sentidos.
 - **Recurrencia explícita en dominio**: `Tarea` incorpora `EsRepetitiva`, `TipoRecurrencia` y `ProximaRecurrencia` para modelar reglas de recurrencia declaradas en PRD.
 - **Plantillas reutilizables**: se incorpora la entidad `PlantillaTarea` y su relación opcional con `Tarea` mediante `PlantillaTareaId`.
+- **Asignación opcional de responsable**: `Tarea` incorpora `UsuarioId` y navegación `Usuario`, y `Usuario` expone colección `Tareas` para modelar relación 1:N con borrado en `SetNull`.
+- **Usuarios con departamento obligatorio**: `Usuario` incorpora `DepartamentoId` y navegación `Departamento`, estableciendo relación 1:N (`Departamento` -> `Usuarios`) con restricción de borrado.
+- **Mantenimiento de departamentos**: se incorpora recurso API específico para alta, consulta, edición y eliminación controlada de departamentos.
 - **Contratos HTTP desacoplados**: las acciones de API usan DTOs dedicados para entrada y salida, preservando el modelo de dominio interno.
 
 ## 7. Pendientes / Preguntas abiertas
 
-- **Implementación de persistencia**: falta crear `ApplicationDbContext` y configuración de EF Core con SQLite.
 - **Consolidar solución**: definir si se mantiene `slnx` como formato oficial o si se incorpora también `.sln` para compatibilidad con tooling externo.
-- **Persistencia actual en memoria**: validar migración desde `InMemoryStore` a EF Core + SQLite para cumplir el PRD de persistencia local.
 - **Frontend React + TypeScript + Vite**: está definido en las instrucciones del proyecto, pero no existe carpeta `frontend` en el repositorio actual.
 - **Pruebas automatizadas**: no hay proyecto de tests para validar reglas de negocio ni comportamiento HTTP.

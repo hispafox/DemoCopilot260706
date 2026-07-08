@@ -30,6 +30,10 @@ public class TareaDto
     public int? PlantillaTareaId { get; set; }
 
     public int? CategoriaId { get; set; }
+
+    public int? UsuarioId { get; set; }
+
+    public string? UsuarioNombre { get; set; }
 }
 
 public class CrearActualizarTareaRequest : IValidatableObject
@@ -62,6 +66,8 @@ public class CrearActualizarTareaRequest : IValidatableObject
     public int? PlantillaTareaId { get; set; }
 
     public int? CategoriaId { get; set; }
+
+    public int? UsuarioId { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -146,5 +152,59 @@ public class CrearActualizarPlantillaTareaRequest : IValidatableObject
                 "TipoRecurrencia es obligatorio cuando EsRepetitiva es true.",
                 new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
         }
+    }
+}
+
+public class UsuarioDto
+{
+    public int Id { get; set; }
+
+    public string Nombre { get; set; } = string.Empty;
+
+    public string? Email { get; set; }
+
+    public int DepartamentoId { get; set; }
+
+    public string DepartamentoNombre { get; set; } = string.Empty;
+}
+
+public class CrearActualizarUsuarioRequest
+{
+    private string _nombre = string.Empty;
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacio.")]
+    [StringLength(150)]
+    public string Nombre
+    {
+        get => _nombre;
+        set => _nombre = (value ?? string.Empty).Trim();
+    }
+
+    [StringLength(200)]
+    public string? Email { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "El departamento es obligatorio.")]
+    public int DepartamentoId { get; set; }
+}
+
+public class DepartamentoDto
+{
+    public int Id { get; set; }
+
+    public string Nombre { get; set; } = string.Empty;
+}
+
+public class CrearActualizarDepartamentoRequest
+{
+    private string _nombre = string.Empty;
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacio.")]
+    [StringLength(100)]
+    public string Nombre
+    {
+        get => _nombre;
+        set => _nombre = (value ?? string.Empty).Trim();
     }
 }
