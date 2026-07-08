@@ -249,12 +249,6 @@ description: Plantilla para inspeccionar el estado del repositorio
 }
 ```
 
-## Ejemplos
-
-Ejemplo 1: ...
-Ejemplo 2: ...
-```
-
 **¿Cuándo usar prompts?**
 
 - Cuando repites la misma pregunta frecuentemente
