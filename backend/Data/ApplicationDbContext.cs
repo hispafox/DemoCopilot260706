@@ -19,6 +19,10 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Departamento> Departamentos => Set<Departamento>();
 
+    public DbSet<Sede> Sedes => Set<Sede>();
+
+    public DbSet<Poblacion> Poblaciones => Set<Poblacion>();
+
     public DbSet<TipoTarea> TiposTarea => Set<TipoTarea>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -77,11 +81,31 @@ public class ApplicationDbContext : DbContext
                 .WithMany(d => d.Usuarios)
                 .HasForeignKey(u => u.DepartamentoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(u => u.Sede)
+                .WithMany(s => s.Usuarios)
+                .HasForeignKey(u => u.SedeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(u => u.Poblacion)
+                .WithMany(p => p.Usuarios)
+                .HasForeignKey(u => u.PoblacionId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Departamento>(entity =>
         {
             entity.Property(d => d.Nombre).IsRequired().HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Sede>(entity =>
+        {
+            entity.Property(s => s.Nombre).IsRequired().HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Poblacion>(entity =>
+        {
+            entity.Property(p => p.Nombre).IsRequired().HasMaxLength(100);
         });
 
         modelBuilder.Entity<TipoTarea>(entity =>

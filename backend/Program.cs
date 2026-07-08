@@ -14,6 +14,8 @@ builder.Services.AddScoped<ITiposTareaService, TiposTareaService>();
 builder.Services.AddScoped<IPlantillasTareaService, PlantillasTareaService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IDepartamentosService, DepartamentosService>();
+builder.Services.AddScoped<ISedesService, SedesService>();
+builder.Services.AddScoped<IPoblacionesService, PoblacionesService>();
 
 var app = builder.Build();
 

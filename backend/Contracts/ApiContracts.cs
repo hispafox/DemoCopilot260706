@@ -203,6 +203,14 @@ public class UsuarioDto
     public int DepartamentoId { get; set; }
 
     public string DepartamentoNombre { get; set; } = string.Empty;
+
+    public int SedeId { get; set; }
+
+    public string SedeNombre { get; set; } = string.Empty;
+
+    public int PoblacionId { get; set; }
+
+    public string PoblacionNombre { get; set; } = string.Empty;
 }
 
 public class CrearActualizarUsuarioRequest
@@ -223,6 +231,33 @@ public class CrearActualizarUsuarioRequest
 
     [Range(1, int.MaxValue, ErrorMessage = "El departamento es obligatorio.")]
     public int DepartamentoId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "La sede es obligatoria.")]
+    public int SedeId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "La poblacion es obligatoria.")]
+    public int PoblacionId { get; set; }
+}
+
+public class PoblacionDto
+{
+    public int Id { get; set; }
+
+    public string Nombre { get; set; } = string.Empty;
+}
+
+public class CrearActualizarPoblacionRequest
+{
+    private string _nombre = string.Empty;
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacio.")]
+    [StringLength(100)]
+    public string Nombre
+    {
+        get => _nombre;
+        set => _nombre = (value ?? string.Empty).Trim();
+    }
 }
 
 public class DepartamentoDto
@@ -233,6 +268,27 @@ public class DepartamentoDto
 }
 
 public class CrearActualizarDepartamentoRequest
+{
+    private string _nombre = string.Empty;
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacio.")]
+    [StringLength(100)]
+    public string Nombre
+    {
+        get => _nombre;
+        set => _nombre = (value ?? string.Empty).Trim();
+    }
+}
+
+public class SedeDto
+{
+    public int Id { get; set; }
+
+    public string Nombre { get; set; } = string.Empty;
+}
+
+public class CrearActualizarSedeRequest
 {
     private string _nombre = string.Empty;
 

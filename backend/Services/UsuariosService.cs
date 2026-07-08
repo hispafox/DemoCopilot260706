@@ -21,6 +21,7 @@ public class UsuariosService : IUsuariosService
     {
         return await _dbContext.Usuarios
             .AsNoTracking()
+            .Include(u => u.Poblacion)
             .OrderBy(u => u.Nombre)
             .Select(u => new UsuarioDto
             {
@@ -28,7 +29,11 @@ public class UsuariosService : IUsuariosService
                 Nombre = u.Nombre,
                 Email = u.Email,
                 DepartamentoId = u.DepartamentoId,
-                DepartamentoNombre = u.Departamento.Nombre
+                DepartamentoNombre = u.Departamento.Nombre,
+                SedeId = u.SedeId,
+                SedeNombre = u.Sede.Nombre,
+                PoblacionId = u.PoblacionId,
+                PoblacionNombre = u.Poblacion.Nombre
             })
             .ToListAsync();
     }
@@ -37,6 +42,7 @@ public class UsuariosService : IUsuariosService
     {
         return await _dbContext.Usuarios
             .AsNoTracking()
+            .Include(u => u.Poblacion)
             .Where(u => u.Id == id)
             .Select(u => new UsuarioDto
             {
@@ -44,7 +50,11 @@ public class UsuariosService : IUsuariosService
                 Nombre = u.Nombre,
                 Email = u.Email,
                 DepartamentoId = u.DepartamentoId,
-                DepartamentoNombre = u.Departamento.Nombre
+                DepartamentoNombre = u.Departamento.Nombre,
+                SedeId = u.SedeId,
+                SedeNombre = u.Sede.Nombre,
+                PoblacionId = u.PoblacionId,
+                PoblacionNombre = u.Poblacion.Nombre
             })
             .FirstOrDefaultAsync();
     }
@@ -55,13 +65,15 @@ public class UsuariosService : IUsuariosService
         {
             Nombre = usuario.Nombre,
             Email = usuario.Email,
-            DepartamentoId = usuario.DepartamentoId
+            DepartamentoId = usuario.DepartamentoId,
+            SedeId = usuario.SedeId,
+            PoblacionId = usuario.PoblacionId
         };
 
         _dbContext.Usuarios.Add(nuevoUsuario);
         await _dbContext.SaveChangesAsync();
 
-        return Mapear(nuevoUsuario);
+        return await ObtenerPorIdInternoAsync(nuevoUsuario.Id) ?? Mapear(nuevoUsuario);
     }
 
     public async Task<UsuarioDto?> ActualizarAsync(int id, CrearActualizarUsuarioRequest usuarioActualizado)
@@ -75,9 +87,11 @@ public class UsuariosService : IUsuariosService
         usuarioExistente.Nombre = usuarioActualizado.Nombre;
         usuarioExistente.Email = usuarioActualizado.Email;
         usuarioExistente.DepartamentoId = usuarioActualizado.DepartamentoId;
+        usuarioExistente.SedeId = usuarioActualizado.SedeId;
+        usuarioExistente.PoblacionId = usuarioActualizado.PoblacionId;
 
         await _dbContext.SaveChangesAsync();
-        return Mapear(usuarioExistente);
+        return await ObtenerPorIdInternoAsync(usuarioExistente.Id) ?? Mapear(usuarioExistente);
     }
 
     public async Task<bool> EliminarAsync(int id)
@@ -101,7 +115,32 @@ public class UsuariosService : IUsuariosService
             Nombre = usuario.Nombre,
             Email = usuario.Email,
             DepartamentoId = usuario.DepartamentoId,
-            DepartamentoNombre = usuario.Departamento?.Nombre ?? string.Empty
+            DepartamentoNombre = usuario.Departamento?.Nombre ?? string.Empty,
+            SedeId = usuario.SedeId,
+            SedeNombre = usuario.Sede?.Nombre ?? string.Empty,
+            PoblacionId = usuario.PoblacionId,
+            PoblacionNombre = usuario.Poblacion?.Nombre ?? string.Empty
         };
+    }
+
+    private Task<UsuarioDto?> ObtenerPorIdInternoAsync(int id)
+    {
+        return _dbContext.Usuarios
+            .AsNoTracking()
+            .Include(u => u.Poblacion)
+            .Where(u => u.Id == id)
+            .Select(u => new UsuarioDto
+            {
+                Id = u.Id,
+                Nombre = u.Nombre,
+                Email = u.Email,
+                DepartamentoId = u.DepartamentoId,
+                DepartamentoNombre = u.Departamento.Nombre,
+                SedeId = u.SedeId,
+                SedeNombre = u.Sede.Nombre,
+                PoblacionId = u.PoblacionId,
+                PoblacionNombre = u.Poblacion.Nombre
+            })
+            .FirstOrDefaultAsync();
     }
 }

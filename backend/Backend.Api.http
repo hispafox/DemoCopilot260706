@@ -31,7 +31,7 @@ Accept: {{json}}
 GET {{host}}/api/usuarios
 Accept: {{json}}
 
-### Crear usuario (201)
+### Crear usuario con poblacion (201)
 POST {{host}}/api/usuarios
 Content-Type: {{json}}
 Accept: {{json}}
@@ -39,12 +39,53 @@ Accept: {{json}}
 {
   "nombre": "Usuario Demo",
   "email": "usuario.demo@example.com",
-  "departamentoId": 1
+  "departamentoId": 1,
+  "sedeId": 1,
+  "poblacionId": 1
 }
 
 ### Obtener usuario inexistente (error esperado 404)
 GET {{host}}/api/usuarios/999999
 Accept: {{json}}
+
+### Actualizar usuario con poblacion (200)
+PUT {{host}}/api/usuarios/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Usuario Demo Actualizado",
+  "email": "usuario.demo.actualizado@example.com",
+  "departamentoId": 1,
+  "sedeId": 1,
+  "poblacionId": 1
+}
+
+### Crear usuario sin poblacion (error esperado 400)
+POST {{host}}/api/usuarios
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Usuario sin poblacion",
+  "email": "usuario.sin.poblacion@example.com",
+  "departamentoId": 1,
+  "sedeId": 1,
+  "poblacionId": 0
+}
+
+### Actualizar usuario sin poblacion (error esperado 400)
+PUT {{host}}/api/usuarios/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Usuario Demo Actualizado",
+  "email": "usuario.demo.actualizado@example.com",
+  "departamentoId": 1,
+  "sedeId": 1,
+  "poblacionId": 0
+}
 
 ### Crear usuario invalido (400)
 POST {{host}}/api/usuarios
@@ -53,7 +94,9 @@ Accept: {{json}}
 
 {
   "nombre": "   ",
-  "departamentoId": 1
+  "departamentoId": 1,
+  "sedeId": 1,
+  "poblacionId": 1
 }
 
 ### Crear usuario con departamento inexistente (400)
@@ -64,8 +107,70 @@ Accept: {{json}}
 {
   "nombre": "Usuario sin departamento válido",
   "email": "usuario.invalido@example.com",
-  "departamentoId": 999999
+  "departamentoId": 999999,
+  "sedeId": 1,
+  "poblacionId": 1
 }
+
+### Listar poblaciones
+GET {{host}}/api/poblaciones
+Accept: {{json}}
+
+### Crear poblacion (201)
+POST {{host}}/api/poblaciones
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Barcelona"
+}
+
+### Obtener poblacion inexistente (error esperado 404)
+GET {{host}}/api/poblaciones/999999
+Accept: {{json}}
+
+### Obtener poblacion por id (200)
+GET {{host}}/api/poblaciones/1
+Accept: {{json}}
+
+### Crear poblacion invalida (400)
+POST {{host}}/api/poblaciones
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   "
+}
+
+### Actualizar poblacion (200)
+PUT {{host}}/api/poblaciones/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Barcelona Centro"
+}
+
+### Actualizar poblacion inexistente (error esperado 404)
+PUT {{host}}/api/poblaciones/999999
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Poblacion Fantasma"
+}
+
+### Eliminar poblacion sin usuarios asociados (204)
+DELETE {{host}}/api/poblaciones/2
+Accept: {{json}}
+
+### Eliminar poblacion con usuarios asociados (error esperado 409)
+DELETE {{host}}/api/poblaciones/1
+Accept: {{json}}
+
+### Eliminar poblacion inexistente (error esperado 404)
+DELETE {{host}}/api/poblaciones/999999
+Accept: {{json}}
 
 ### Listar tareas (contrato DTO)
 GET {{host}}/api/tareas

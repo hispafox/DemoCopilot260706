@@ -18,5 +18,13 @@ public class Usuario
 
     public Departamento Departamento { get; set; } = null!;
 
+    public int SedeId { get; set; }
+
+    public Sede Sede { get; set; } = null!;
+
+    public int PoblacionId { get; set; }
+
+    public Poblacion Poblacion { get; set; } = null!;
+
     public ICollection<Tarea> Tareas { get; set; } = new List<Tarea>();
 }

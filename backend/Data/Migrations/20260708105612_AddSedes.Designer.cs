@@ -3,6 +3,7 @@ using System;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708105612_AddSedes")]
+    partial class AddSedes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -88,22 +91,6 @@ namespace Backend.Api.Data.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("PlantillasTarea");
-                });
-
-            modelBuilder.Entity("Backend.Models.Poblacion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Poblaciones");
                 });
 
             modelBuilder.Entity("Backend.Models.Sede", b =>
@@ -252,17 +239,12 @@ namespace Backend.Api.Data.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PoblacionId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("SedeId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DepartamentoId");
-
-                    b.HasIndex("PoblacionId");
 
                     b.HasIndex("SedeId");
 
@@ -319,12 +301,6 @@ namespace Backend.Api.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Backend.Models.Poblacion", "Poblacion")
-                        .WithMany("Usuarios")
-                        .HasForeignKey("PoblacionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Backend.Models.Sede", "Sede")
                         .WithMany("Usuarios")
                         .HasForeignKey("SedeId")
@@ -332,8 +308,6 @@ namespace Backend.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Departamento");
-
-                    b.Navigation("Poblacion");
 
                     b.Navigation("Sede");
                 });
@@ -344,11 +318,6 @@ namespace Backend.Api.Data.Migrations
                 });
 
             modelBuilder.Entity("Backend.Models.Departamento", b =>
-                {
-                    b.Navigation("Usuarios");
-                });
-
-            modelBuilder.Entity("Backend.Models.Poblacion", b =>
                 {
                     b.Navigation("Usuarios");
                 });
