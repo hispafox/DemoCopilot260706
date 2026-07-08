@@ -13,11 +13,13 @@ public class TareasController : ControllerBase
 {
     private readonly ITareasService _tareasService;
     private readonly IUsuariosService _usuariosService;
+    private readonly ITiposTareaService _tiposTareaService;
 
-    public TareasController(ITareasService tareasService, IUsuariosService usuariosService)
+    public TareasController(ITareasService tareasService, IUsuariosService usuariosService, ITiposTareaService tiposTareaService)
     {
         _tareasService = tareasService;
         _usuariosService = usuariosService;
+        _tiposTareaService = tiposTareaService;
     }
 
     [HttpGet]
@@ -51,6 +53,13 @@ public class TareasController : ControllerBase
             }
         }
 
+        var tipoTareaExiste = await _tiposTareaService.ExisteAsync(tarea.TipoTareaId);
+        if (!tipoTareaExiste)
+        {
+            ModelState.AddModelError(nameof(tarea.TipoTareaId), "El tipo de tarea indicado no existe.");
+            return ValidationProblem(ModelState);
+        }
+
         var nuevaTarea = await _tareasService.CrearAsync(tarea);
         return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaTarea.Id }, nuevaTarea);
     }
@@ -71,6 +80,13 @@ public class TareasController : ControllerBase
                 ModelState.AddModelError(nameof(tareaActualizada.UsuarioId), "El usuario indicado no existe.");
                 return ValidationProblem(ModelState);
             }
+        }
+
+        var tipoTareaExiste = await _tiposTareaService.ExisteAsync(tareaActualizada.TipoTareaId);
+        if (!tipoTareaExiste)
+        {
+            ModelState.AddModelError(nameof(tareaActualizada.TipoTareaId), "El tipo de tarea indicado no existe.");
+            return ValidationProblem(ModelState);
         }
 
         var tarea = await _tareasService.ActualizarAsync(id, tareaActualizada);

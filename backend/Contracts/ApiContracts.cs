@@ -34,6 +34,10 @@ public class TareaDto
     public int? UsuarioId { get; set; }
 
     public string? UsuarioNombre { get; set; }
+
+    public int TipoTareaId { get; set; }
+
+    public string TipoTareaNombre { get; set; } = string.Empty;
 }
 
 public class CrearActualizarTareaRequest : IValidatableObject
@@ -69,6 +73,9 @@ public class CrearActualizarTareaRequest : IValidatableObject
 
     public int? UsuarioId { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "El tipo de tarea es obligatorio.")]
+    public int TipoTareaId { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!EsRepetitiva)
@@ -95,6 +102,36 @@ public class CrearActualizarTareaRequest : IValidatableObject
                 new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
         }
     }
+}
+
+public class TipoTareaDto
+{
+    public int Id { get; set; }
+
+    public string Nombre { get; set; } = string.Empty;
+
+    public string? Descripcion { get; set; }
+
+    public bool EstaActivo { get; set; }
+}
+
+public class CrearActualizarTipoTareaRequest
+{
+    private string _nombre = string.Empty;
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacio.")]
+    [StringLength(100)]
+    public string Nombre
+    {
+        get => _nombre;
+        set => _nombre = (value ?? string.Empty).Trim();
+    }
+
+    [StringLength(300)]
+    public string? Descripcion { get; set; }
+
+    public bool EstaActivo { get; set; } = true;
 }
 
 public class PlantillaTareaDto

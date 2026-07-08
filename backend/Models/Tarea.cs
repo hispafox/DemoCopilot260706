@@ -47,6 +47,10 @@ public class Tarea : IValidatableObject
 
     public Usuario? Usuario { get; set; }
 
+    public int TipoTareaId { get; set; }
+
+    public TipoTarea? TipoTarea { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!EsRepetitiva)

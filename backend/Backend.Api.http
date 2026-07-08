@@ -71,6 +71,34 @@ Accept: {{json}}
 GET {{host}}/api/tareas
 Accept: {{json}}
 
+### Listar tipos de tarea
+GET {{host}}/api/tipos-tarea
+Accept: {{json}}
+
+### Crear tipo de tarea (201)
+POST {{host}}/api/tipos-tarea
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Incidencia",
+  "descripcion": "Seguimiento de incidencias",
+  "estaActivo": true
+}
+
+### Obtener tipo de tarea inexistente (error esperado 404)
+GET {{host}}/api/tipos-tarea/999999
+Accept: {{json}}
+
+### Crear tipo de tarea inválido (400)
+POST {{host}}/api/tipos-tarea
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   "
+}
+
 ### Obtener tarea inexistente (error esperado 404)
 GET {{host}}/api/tareas/999999
 Accept: {{json}}
@@ -87,6 +115,7 @@ Accept: {{json}}
   "prioridad": 4,
   "esRepetitiva": true,
   "tipoRecurrencia": 1,
+  "tipoTareaId": 3,
   "usuarioId": 1
 }
 
@@ -101,6 +130,7 @@ Accept: {{json}}
   "notas": "Debe fallar por titulo vacío tras trim",
   "prioridad": 2,
   "esRepetitiva": false,
+  "tipoTareaId": 3,
   "usuarioId": null
 }
 
@@ -114,7 +144,21 @@ Accept: {{json}}
   "estaCompletada": false,
   "prioridad": 2,
   "esRepetitiva": false,
+  "tipoTareaId": 3,
   "usuarioId": 999999
+}
+
+### Crear tarea con tipo inexistente (error esperado 400)
+POST {{host}}/api/tareas
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "Tarea con tipo inválido",
+  "estaCompletada": false,
+  "prioridad": 2,
+  "esRepetitiva": false,
+  "tipoTareaId": 999999
 }
 
 ### Actualizar tarea inexistente (error esperado 404)
@@ -128,6 +172,7 @@ Accept: {{json}}
   "notas": "Ejemplo de contrato completo",
   "prioridad": 3,
   "esRepetitiva": false,
+  "tipoTareaId": 3,
   "usuarioId": 1
 }
 

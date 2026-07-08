@@ -19,6 +19,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Departamento> Departamentos => Set<Departamento>();
 
+    public DbSet<TipoTarea> TiposTarea => Set<TipoTarea>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -27,11 +29,17 @@ public class ApplicationDbContext : DbContext
         {
             entity.Property(t => t.Titulo).IsRequired().HasMaxLength(200);
             entity.Property(t => t.Prioridad).HasConversion<int>();
+            entity.Property(t => t.TipoTareaId).IsRequired();
 
             entity.HasOne(t => t.Categoria)
                 .WithMany(c => c.Tareas)
                 .HasForeignKey(t => t.CategoriaId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(t => t.TipoTarea)
+                .WithMany(tipo => tipo.Tareas)
+                .HasForeignKey(t => t.TipoTareaId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(t => t.PlantillaTarea)
                 .WithMany()
@@ -74,6 +82,20 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Departamento>(entity =>
         {
             entity.Property(d => d.Nombre).IsRequired().HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<TipoTarea>(entity =>
+        {
+            entity.Property(tipo => tipo.Nombre).IsRequired().HasMaxLength(100);
+            entity.Property(tipo => tipo.Descripcion).HasMaxLength(300);
+
+            entity.HasIndex(tipo => tipo.Nombre).IsUnique();
+
+            entity.HasData(
+                new TipoTarea { Id = 1, Nombre = "Proyecto", EstaActivo = true },
+                new TipoTarea { Id = 2, Nombre = "Objetivo", EstaActivo = true },
+                new TipoTarea { Id = 3, Nombre = "Tarea", EstaActivo = true },
+                new TipoTarea { Id = 4, Nombre = "Hito", EstaActivo = true });
         });
     }
 }

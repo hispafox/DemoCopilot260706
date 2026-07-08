@@ -38,7 +38,9 @@ public class TareasService : ITareasService
                 PlantillaTareaId = tarea.PlantillaTareaId,
                 CategoriaId = tarea.CategoriaId,
                 UsuarioId = tarea.UsuarioId,
-                UsuarioNombre = tarea.Usuario != null ? tarea.Usuario.Nombre : null
+                UsuarioNombre = tarea.Usuario != null ? tarea.Usuario.Nombre : null,
+                TipoTareaId = tarea.TipoTareaId,
+                TipoTareaNombre = tarea.TipoTarea != null ? tarea.TipoTarea.Nombre : string.Empty
             })
             .ToListAsync();
     }
@@ -63,7 +65,9 @@ public class TareasService : ITareasService
                 PlantillaTareaId = tarea.PlantillaTareaId,
                 CategoriaId = tarea.CategoriaId,
                 UsuarioId = tarea.UsuarioId,
-                UsuarioNombre = tarea.Usuario != null ? tarea.Usuario.Nombre : null
+                UsuarioNombre = tarea.Usuario != null ? tarea.Usuario.Nombre : null,
+                TipoTareaId = tarea.TipoTareaId,
+                TipoTareaNombre = tarea.TipoTarea != null ? tarea.TipoTarea.Nombre : string.Empty
             })
             .FirstOrDefaultAsync();
     }
@@ -83,7 +87,8 @@ public class TareasService : ITareasService
             ProximaRecurrencia = tarea.ProximaRecurrencia,
             PlantillaTareaId = tarea.PlantillaTareaId,
             CategoriaId = tarea.CategoriaId,
-            UsuarioId = tarea.UsuarioId
+            UsuarioId = tarea.UsuarioId,
+            TipoTareaId = tarea.TipoTareaId
         };
 
         if (nuevaTarea.PlantillaTareaId is int plantillaId)
@@ -116,6 +121,7 @@ public class TareasService : ITareasService
         tareaExistente.PlantillaTareaId = tareaActualizada.PlantillaTareaId;
         tareaExistente.CategoriaId = tareaActualizada.CategoriaId;
         tareaExistente.UsuarioId = tareaActualizada.UsuarioId;
+        tareaExistente.TipoTareaId = tareaActualizada.TipoTareaId;
 
         await _dbContext.SaveChangesAsync();
         return await ObtenerPorIdAsync(tareaExistente.Id) ?? Mapear(tareaExistente);
@@ -178,7 +184,8 @@ public class TareasService : ITareasService
             TipoRecurrencia = plantilla.TipoRecurrencia,
             PlantillaTareaId = plantilla.Id,
             CategoriaId = plantilla.CategoriaId,
-            ProximaRecurrencia = plantilla.EsRepetitiva ? ObtenerPrimeraRecurrencia(plantilla.TipoRecurrencia) : null
+            ProximaRecurrencia = plantilla.EsRepetitiva ? ObtenerPrimeraRecurrencia(plantilla.TipoRecurrencia) : null,
+            TipoTareaId = await ObtenerTipoTareaPredeterminadoIdAsync()
         };
 
         _dbContext.Tareas.Add(nuevaTarea);
@@ -203,7 +210,9 @@ public class TareasService : ITareasService
             PlantillaTareaId = tarea.PlantillaTareaId,
             CategoriaId = tarea.CategoriaId,
             UsuarioId = tarea.UsuarioId,
-            UsuarioNombre = tarea.Usuario?.Nombre
+            UsuarioNombre = tarea.Usuario?.Nombre,
+            TipoTareaId = tarea.TipoTareaId,
+            TipoTareaNombre = tarea.TipoTarea?.Nombre ?? string.Empty
         };
     }
 
@@ -225,8 +234,21 @@ public class TareasService : ITareasService
             CategoriaId = tareaOrigen.CategoriaId,
             Categoria = tareaOrigen.Categoria,
             UsuarioId = tareaOrigen.UsuarioId,
-            Usuario = tareaOrigen.Usuario
+            Usuario = tareaOrigen.Usuario,
+            TipoTareaId = tareaOrigen.TipoTareaId,
+            TipoTarea = tareaOrigen.TipoTarea
         };
+    }
+
+    private async Task<int> ObtenerTipoTareaPredeterminadoIdAsync()
+    {
+        var tipoId = await _dbContext.TiposTarea
+            .AsNoTracking()
+            .Where(tipo => tipo.Nombre == "Tarea")
+            .Select(tipo => (int?)tipo.Id)
+            .FirstOrDefaultAsync();
+
+        return tipoId ?? 3;
     }
 
     private static DateTime? ObtenerPrimeraRecurrencia(TipoRecurrencia? tipoRecurrencia)
