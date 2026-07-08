@@ -10,6 +10,11 @@ Para este curso ya existe un skill local de orquestacion generica para coordinar
 - Secuencia base: analisis-diseno -> validador-analisis-prd (opcional recomendado) -> modelo-aplicacion
 - Uso recomendado: invocarlo como paso inicial de cada practica y ajustar la secuencia cuando el ejercicio necesite mas skills.
 
+Tambien existe un skill local para documentar y mantener el plano Mermaid de esa orquestacion:
+
+- Ruta: .github/skills/documentacion-orquestacion-skills/SKILL.md
+- Uso recomendado: regenerar `documentacion/skills-orquestacion.md` cuando cambien skills, dependencias o la secuencia canónica.
+
 Una *skill* es una carpeta con un archivo `SKILL.md`: instrucciones en lenguaje claro que el agente (Copilot, Claude Code, Codex…) lee **solo cuando hacen falta**. No es código, son instrucciones. La mejor forma de aprender a crearlas es **leer las de otros**. Aquí tienes dónde.
 
 ---

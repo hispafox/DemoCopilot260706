@@ -185,12 +185,13 @@ Una estructura típica puede ser:
 
 ## Expectativas de testing
 
-- Todo cambio no trivial debe incluir pruebas.
-- Prefiere pruebas unitarias para la lógica de aplicación, componentes de React y transformaciones de datos cuando tengan comportamiento relevante.
-- Prefiere pruebas unitarias para la lógica de aplicación, componentes de React, hooks y transformaciones de datos cuando tengan comportamiento relevante.
-- Añade pruebas de integración cuando el cambio dependa de comportamiento HTTP, enrutamiento, serialización, validación o base de datos.
-- Mantén las pruebas enfocadas en el comportamiento observable.
-- No añadas pruebas de relleno.
+- Excepción temporal del curso: por ahora no se deben crear ni actualizar tests salvo petición expresa del usuario.
+- Cuando se reactive testing, todo cambio no trivial debe incluir pruebas.
+- Cuando se reactive testing, prefiere pruebas unitarias para la lógica de aplicación, componentes de React y transformaciones de datos cuando tengan comportamiento relevante.
+- Cuando se reactive testing, prefiere pruebas unitarias para la lógica de aplicación, componentes de React, hooks y transformaciones de datos cuando tengan comportamiento relevante.
+- Cuando se reactive testing, añade pruebas de integración cuando el cambio dependa de comportamiento HTTP, enrutamiento, serialización, validación o base de datos.
+- Cuando se reactive testing, mantén las pruebas enfocadas en el comportamiento observable.
+- Cuando se reactive testing, no añadas pruebas de relleno.
 
 ## Qué evitar
 
@@ -221,5 +222,5 @@ Al generar código para este proyecto:
 - Conserva la separación existente entre API y frontend React con TypeScript y Vite.
 - Haz el cambio más pequeño que resuelva completamente la petición.
 - Actualiza o añade migraciones de EF Core cuando cambie el modelo.
-- Actualiza las pruebas junto con la implementación.
+- No crear ni actualizar pruebas mientras siga activa la excepción temporal del curso, salvo petición expresa del usuario.
 - Si una petición introduce complejidad arquitectónica innecesaria, propone primero la opción más simple.

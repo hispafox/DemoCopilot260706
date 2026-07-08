@@ -96,6 +96,7 @@ Reglas de contrato HTTP:
 - Devolver errores de validacion claros y predecibles.
 - Devolver NotFound solo cuando corresponda semantica y funcionalmente.
 - Si cambia un contrato de entrada/salida, el archivo `.http` debe quedar sincronizado en la misma tarea con ejemplos actualizados para esa propiedad.
+- Si la peticion solicita una capacidad nueva para un recurso nuevo (por ejemplo, nueva entidad), no basta con exponer su identificador en otro recurso: se deben crear o actualizar endpoints propios del recurso segun el alcance pedido.
 
 Reglas de diseno del codigo:
 
@@ -110,6 +111,7 @@ Reglas de validacion final:
 - Si no existe proyecto compilable, validar sintaxis, coherencia de referencias y alineacion documental, sin fingir una compilacion inexistente.
 - Reportar explicitamente cuando no se pudo compilar por ausencia de .csproj, Program.cs o infraestructura equivalente.
 - Verificar que el archivo `.http` quede actualizado y ejecutable para probar los endpoints modificados.
+- Si la peticion es de implementacion punto a punto, validar que el recurso nuevo quede visible por API (al menos endpoint de lectura y de alta, salvo que el usuario limite explicitamente el alcance).
 
 ## Criterios de calidad
 
@@ -122,6 +124,7 @@ Reglas de validacion final:
 - Si hay cambios en endpoints, existe archivo `.http` actualizado y alineado con el puerto real configurado en `launchSettings.json`.
 - Si se agregan propiedades nuevas en contratos, el `.http` incluye esas propiedades en los ejemplos OK y en los escenarios de actualizacion aplicables.
 - El resultado no presupone infraestructura inexistente: compila si el proyecto existe y queda explicitamente limitado si el proyecto aun no existe.
+- Cuando el alcance incluye nuevo recurso API, el resultado no se considera completo sin controlador/endpoints del recurso y sin ejemplos en `.http` para probarlos.
 
 ## Que evitar
 

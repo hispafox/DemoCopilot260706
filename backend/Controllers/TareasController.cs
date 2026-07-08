@@ -12,10 +12,12 @@ namespace Backend.Controllers;
 public class TareasController : ControllerBase
 {
     private readonly ITareasService _tareasService;
+    private readonly IUsuariosService _usuariosService;
 
-    public TareasController(ITareasService tareasService)
+    public TareasController(ITareasService tareasService, IUsuariosService usuariosService)
     {
         _tareasService = tareasService;
+        _usuariosService = usuariosService;
     }
 
     [HttpGet]
@@ -39,6 +41,16 @@ public class TareasController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
+        if (tarea.UsuarioId is int usuarioId)
+        {
+            var usuario = await _usuariosService.ObtenerPorIdAsync(usuarioId);
+            if (usuario is null)
+            {
+                ModelState.AddModelError(nameof(tarea.UsuarioId), "El usuario indicado no existe.");
+                return ValidationProblem(ModelState);
+            }
+        }
+
         var nuevaTarea = await _tareasService.CrearAsync(tarea);
         return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaTarea.Id }, nuevaTarea);
     }
@@ -49,6 +61,16 @@ public class TareasController : ControllerBase
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
+        }
+
+        if (tareaActualizada.UsuarioId is int usuarioId)
+        {
+            var usuario = await _usuariosService.ObtenerPorIdAsync(usuarioId);
+            if (usuario is null)
+            {
+                ModelState.AddModelError(nameof(tareaActualizada.UsuarioId), "El usuario indicado no existe.");
+                return ValidationProblem(ModelState);
+            }
         }
 
         var tarea = await _tareasService.ActualizarAsync(id, tareaActualizada);

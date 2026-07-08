@@ -43,6 +43,10 @@ public class Tarea : IValidatableObject
 
     public Categoria? Categoria { get; set; }
 
+    public int? UsuarioId { get; set; }
+
+    public Usuario? Usuario { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!EsRepetitiva)

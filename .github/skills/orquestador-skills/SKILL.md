@@ -27,8 +27,9 @@ Secuencia base recomendada en este repo:
 5. base-datos-aplicacion (cuando el cambio alcanza persistencia, DbContext o migraciones)
 6. logica-negocio (cuando el cambio alcanza reglas y decisiones de dominio)
 7. dtos-aplicacion (cuando el cambio alcanza contratos HTTP)
-8. servicios-aplicacion (cuando el cambio alcanza logica de aplicacion y orquestacion)
-9. controladores-api (cuando el cambio alcanza endpoints HTTP)
+8. validaciones-aplicacion (cuando el cambio alcanza restricciones de entrada o guards de dominio explicitados en el analisis)
+9. servicios-aplicacion (cuando el cambio alcanza logica de aplicacion y orquestacion)
+10. controladores-api (cuando el cambio alcanza endpoints HTTP)
 
 El objetivo es reducir errores por saltarse pasos, mantener trazabilidad y permitir orquestar tambien otras cadenas de skills cuando el curso lo requiera.
 
@@ -93,13 +94,27 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 - Si hay hallazgos Alto, continuar solo si usuario acepta riesgo o si se corrigen antes.
 - Si no hay bloqueantes, continuar.
 
-8. Ejecucion del skill de cierre
+8. Gate de cobertura extremo a extremo (obligatorio cuando se pide nueva funcionalidad)
+- Antes de cerrar, verificar cobertura completa por capas para la funcionalidad solicitada.
+- Si falta una capa requerida, no cerrar como OK global: marcar Bloqueado o Parcial con causa concreta.
+- Checklist minimo por capacidad nueva:
+  - Modelo y relaciones de dominio.
+  - Persistencia (DbContext/Fluent API y migracion si hay impacto de esquema).
+  - Contratos HTTP (DTOs request/response) cuando hay endpoints.
+  - Servicios de aplicacion (interfaz, implementacion y registro DI en Program.cs) cuando hay orquestacion.
+  - Controlador/endpoints para el recurso nuevo cuando el alcance incluye exponerlo por API.
+  - Archivo .http actualizado para validar manualmente casos OK y error.
+  - Compilacion del backend o validacion tecnica equivalente si no hay infraestructura compilable.
+  - Documentacion tecnica alineada cuando cambia el comportamiento observable.
+
+9. Ejecucion del skill de cierre
 - Ejecutar el skill final de la secuencia.
 - Actualizar solo elementos relacionados cuando haya impacto real.
 
-9. Cierre y reporte
+10. Cierre y reporte
 - Entregar resumen de ejecucion con:
   - estado por paso (OK, Omitido, Bloqueado)
+  - cobertura extremo a extremo (Completa, Parcial o No aplica)
   - archivos actualizados
   - riesgos pendientes
   - siguiente accion recomendada
@@ -114,9 +129,13 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 - Si un paso de la secuencia no aplica por alcance real, marcarlo como Omitido en el cierre y justificarlo brevemente.
 - Si el cambio alcanza persistencia o esquema, insertar base-datos-aplicacion despues de modelo-aplicacion y antes de logica-negocio.
 - Si el cambio alcanza contratos HTTP, no cerrar la cadena en modelo-aplicacion: continuar con dtos-aplicacion y despues controladores-api si hay impacto en endpoints.
+- Si el cambio alcanza restricciones de entrada o guards derivados del analisis, insertar validaciones-aplicacion despues de dtos-aplicacion y antes de servicios-aplicacion.
 - Si el cambio alcanza reglas de dominio, insertar logica-negocio despues de modelo-aplicacion y antes de servicios-aplicacion.
 - Si el cambio alcanza logica de aplicacion, insertar servicios-aplicacion despues de logica-negocio y antes de controladores-api.
 - Si no existen servicios requeridos por controladores, priorizar servicios-aplicacion para crearlos y registrar su inyeccion en Program.cs antes de tocar endpoints, consumiendo la logica-negocio cuando aplique.
+- Si el usuario pide una nueva funcionalidad de punto a punto, no cerrar el flujo al completar solo modelo o persistencia: ejecutar todos los pasos aplicables hasta exponer la capacidad final solicitada.
+- Si el usuario pide una nueva entidad con relacion a otra existente y espera gestionarla por API, crear tambien su servicio y controlador; no limitarse a agregar la FK en la entidad existente.
+- Si una nueva capacidad queda parcialmente implementada por bloqueo tecnico, reportar Bloqueado con el checklist de capas faltantes y la siguiente accion exacta.
 
 ## Formato de salida sugerido
 
@@ -125,6 +144,7 @@ Usar una salida breve y trazable:
 - Paso 1 <skill>: OK | Omitido | Bloqueado
 - Paso 2 <skill>: OK | Omitido | Bloqueado
 - Paso N <skill>: OK | Omitido | Bloqueado
+- Cobertura E2E: Completa | Parcial | No aplica
 - Archivos tocados:
   - <ruta>
 - Riesgos abiertos:
@@ -139,6 +159,7 @@ Usar una salida breve y trazable:
 - Los bloqueos se reportan con causa concreta y accion correctiva.
 - El resultado final queda alineado con el flujo declarado y sus gates.
 - Cuando el usuario pide crear infraestructura, el paso infraestructura-dotnet no puede marcarse OK sin evidencia de bootstrap minimo o justificacion tecnica de bloqueo.
+- Una peticion de nueva funcionalidad no se considera completada si falta cualquier capa aplicable del checklist E2E.
 
 ## Que evitar
 
