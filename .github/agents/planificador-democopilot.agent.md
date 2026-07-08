@@ -61,12 +61,12 @@ Contenido esperado de cada sección:
 2. **Requisitos** — Requisitos funcionales y restricciones derivados del PRD, las instrucciones y el análisis/diseño.
 3. **Cambios en el modelo** — Entidades y propiedades nuevas o modificadas (respetando los nombres canónicos del proyecto).
 4. **DTOs** — DTOs de entrada y salida necesarios, con sus campos.
-5. **Endpoints** — Endpoints de API afectados o nuevos, con verbo HTTP, ruta y respuesta.
+5. **Endpoints** — Endpoints de API afectados o nuevos, con verbo HTTP, ruta y respuesta. Por cada endpoint nuevo o modificado, indica el ejemplo que debe quedar reflejado en `backend/Backend.Api.http` (al menos un caso OK y un caso de error).
 6. **Lógica de negocio** — Reglas de negocio, validaciones y flujos a aplicar (por ejemplo, longitud de `Titulo` entre 1 y 200 caracteres tras trim, uso de EF Core async, `AsNoTracking` en lecturas, migraciones para cambios de esquema, limitaciones de SQLite).
 7. **Capas afectadas** — Enumera cuáles se tocan y cómo: Models, Dtos, LogicaNegocio, Services, Controllers, Migraciones.
 8. **Tests a implementar** — Pruebas previstas para la funcionalidad. Si sigue activa la excepción temporal de testing del proyecto, indícalo explícitamente y deja la sección como pendiente/no aplicable.
-9. **Criterios de aceptación** — Condiciones verificables que definen que la funcionalidad está terminada.
-10. **Skills a invocar** — Skills del proyecto que el desarrollador deberá usar y en qué orden (por ejemplo, `modelo-aplicacion`, `base-datos-aplicacion`, `dtos-aplicacion`, `logica-negocio`, `servicios-aplicacion`, `controladores-api`).
+9. **Criterios de aceptación** — Condiciones verificables que definen que la funcionalidad está terminada. Cuando la funcionalidad crea o modifica endpoints, incluye **siempre** este criterio fijo y verificable: «El archivo `backend/Backend.Api.http` incluye ejemplos OK y de error para cada endpoint nuevo o modificado, alineado con el puerto real de `backend/Properties/launchSettings.json`.»
+10. **Skills a invocar** — Skills del proyecto que el desarrollador deberá usar y en qué orden. Cuando el cambio abarque varias capas o exponga endpoints, indica que el desarrollador debe coordinarlos mediante el skill `orquestador-skills`, que fuerza la secuencia base del repo (por ejemplo, `modelo-aplicacion`, `base-datos-aplicacion`, `dtos-aplicacion`, `validaciones-aplicacion`, `logica-negocio`, `servicios-aplicacion`, `controladores-api`) y su gate de cobertura extremo a extremo, incluido el `.http`.
 
 ## Criterio de éxito
 
