@@ -87,6 +87,7 @@ export interface UsuarioDto {
   sedeNombre: string;
   poblacionId: number;
   poblacionNombre: string;
+  poblacionProvincia: string;
 }
 
 export interface CrearActualizarUsuarioRequest {
@@ -118,8 +119,10 @@ export interface CrearActualizarSedeRequest {
 export interface PoblacionDto {
   id: number;
   nombre: string;
+  provincia: string;
 }
 
 export interface CrearActualizarPoblacionRequest {
   nombre: string;
+  provincia: string;
 }

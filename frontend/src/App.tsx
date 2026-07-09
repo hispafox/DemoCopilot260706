@@ -3,19 +3,16 @@ import { TasksPanel } from './components/TasksPanel';
 import { TemplatesPanel } from './components/TemplatesPanel';
 import { UsersPanel } from './components/UsersPanel';
 import { TextCatalogPanel } from './components/TextCatalogPanel';
+import { PoblacionesPanel } from './components/PoblacionesPanel';
 import { TiposTareaPanel } from './components/TiposTareaPanel';
 import {
   createDepartamento,
-  createPoblacion,
   createSede,
   deleteDepartamento,
-  deletePoblacion,
   deleteSede,
   getDepartamentos,
-  getPoblaciones,
   getSedes,
   updateDepartamento,
-  updatePoblacion,
   updateSede
 } from './api/resources';
 
@@ -93,15 +90,7 @@ export function App() {
           />
         ) : null}
         {activeTab === 'poblaciones' ? (
-          <TextCatalogPanel
-            title="Poblaciones"
-            description="Catalogo simple para completar la estructura de usuarios."
-            emptyHint="No hay poblaciones todavia."
-            loadItems={getPoblaciones}
-            createItem={(nombre) => createPoblacion({ nombre })}
-            updateItem={(id, nombre) => updatePoblacion(id, { nombre })}
-            deleteItem={deletePoblacion}
-          />
+          <PoblacionesPanel />
         ) : null}
         {activeTab === 'tipos' ? <TiposTareaPanel /> : null}
       </main>

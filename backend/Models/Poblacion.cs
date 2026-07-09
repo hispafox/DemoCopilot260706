@@ -11,5 +11,9 @@ public class Poblacion
     [StringLength(100)]
     public string Nombre { get; set; } = string.Empty;
 
+    [Required]
+    [StringLength(100)]
+    public string Provincia { get; set; } = string.Empty;
+
     public ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

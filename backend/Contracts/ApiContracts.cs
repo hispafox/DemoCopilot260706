@@ -211,6 +211,8 @@ public class UsuarioDto
     public int PoblacionId { get; set; }
 
     public string PoblacionNombre { get; set; } = string.Empty;
+
+    public string PoblacionProvincia { get; set; } = string.Empty;
 }
 
 public class CrearActualizarUsuarioRequest
@@ -244,11 +246,14 @@ public class PoblacionDto
     public int Id { get; set; }
 
     public string Nombre { get; set; } = string.Empty;
+
+    public string Provincia { get; set; } = string.Empty;
 }
 
 public class CrearActualizarPoblacionRequest
 {
     private string _nombre = string.Empty;
+    private string _provincia = string.Empty;
 
     [Required]
     [MinLength(1, ErrorMessage = "El nombre no puede estar vacio.")]
@@ -257,6 +262,15 @@ public class CrearActualizarPoblacionRequest
     {
         get => _nombre;
         set => _nombre = (value ?? string.Empty).Trim();
+    }
+
+    [Required]
+    [MinLength(1, ErrorMessage = "La provincia no puede estar vacia.")]
+    [StringLength(100)]
+    public string Provincia
+    {
+        get => _provincia;
+        set => _provincia = (value ?? string.Empty).Trim();
     }
 }
 

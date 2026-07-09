@@ -226,7 +226,8 @@ Content-Type: {{json}}
 Accept: {{json}}
 
 {
-  "nombre": "Barcelona"
+  "nombre": "Barcelona",
+  "provincia": "Barcelona"
 }
 
 ### Obtener poblacion inexistente (error esperado 404)
@@ -243,7 +244,8 @@ Content-Type: {{json}}
 Accept: {{json}}
 
 {
-  "nombre": "   "
+  "nombre": "Barcelona",
+  "provincia": "   "
 }
 
 ### Actualizar poblacion (200)
@@ -252,7 +254,8 @@ Content-Type: {{json}}
 Accept: {{json}}
 
 {
-  "nombre": "Barcelona Centro"
+  "nombre": "Barcelona Centro",
+  "provincia": "Barcelona"
 }
 
 ### Actualizar poblacion inexistente (error esperado 404)
@@ -261,7 +264,18 @@ Content-Type: {{json}}
 Accept: {{json}}
 
 {
-  "nombre": "Poblacion Fantasma"
+  "nombre": "Poblacion Fantasma",
+  "provincia": "Barcelona"
+}
+
+### Actualizar poblacion con provincia invalida (error esperado 400)
+PUT {{host}}/api/poblaciones/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Barcelona Centro",
+  "provincia": "   "
 }
 
 ### Eliminar poblacion sin usuarios asociados (204)
