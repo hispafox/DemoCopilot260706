@@ -96,19 +96,19 @@ namespace Backend.Api.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CodigoIsoPais")
+                    b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(2)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Provincia")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CodigoIsoPais");
+                    b.HasIndex("Provincia");
 
                     b.ToTable("Poblaciones");
                 });

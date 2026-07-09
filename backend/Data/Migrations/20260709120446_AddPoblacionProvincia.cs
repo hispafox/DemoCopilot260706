@@ -5,34 +5,34 @@
 namespace Backend.Api.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPoblacionCodigoIsoPais : Migration
+    public partial class AddPoblacionProvincia : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "CodigoIsoPais",
+                name: "Provincia",
                 table: "Poblaciones",
                 type: "TEXT",
-                maxLength: 2,
+                maxLength: 100,
                 nullable: false,
-                defaultValue: "ES");
+                defaultValue: "");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Poblaciones_CodigoIsoPais",
+                name: "IX_Poblaciones_Provincia",
                 table: "Poblaciones",
-                column: "CodigoIsoPais");
+                column: "Provincia");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_Poblaciones_CodigoIsoPais",
+                name: "IX_Poblaciones_Provincia",
                 table: "Poblaciones");
 
             migrationBuilder.DropColumn(
-                name: "CodigoIsoPais",
+                name: "Provincia",
                 table: "Poblaciones");
         }
     }

@@ -12,8 +12,8 @@ public class Poblacion
     public string Nombre { get; set; } = string.Empty;
 
     [Required]
-    [StringLength(2, MinimumLength = 2)]
-    public string CodigoIsoPais { get; set; } = "ES";
+    [StringLength(100)]
+    public string Provincia { get; set; } = string.Empty;
 
     public ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

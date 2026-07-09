@@ -26,7 +26,7 @@ public class PoblacionesService : IPoblacionesService
             {
                 Id = p.Id,
                 Nombre = p.Nombre,
-                CodigoIsoPais = p.CodigoIsoPais
+                Provincia = p.Provincia
             })
             .ToListAsync();
     }
@@ -40,7 +40,7 @@ public class PoblacionesService : IPoblacionesService
             {
                 Id = p.Id,
                 Nombre = p.Nombre,
-                CodigoIsoPais = p.CodigoIsoPais
+                Provincia = p.Provincia
             })
             .FirstOrDefaultAsync();
     }
@@ -50,7 +50,7 @@ public class PoblacionesService : IPoblacionesService
         var nuevaPoblacion = new Poblacion
         {
             Nombre = poblacion.Nombre,
-            CodigoIsoPais = poblacion.CodigoIsoPais
+            Provincia = poblacion.Provincia
         };
 
         _dbContext.Poblaciones.Add(nuevaPoblacion);
@@ -60,7 +60,7 @@ public class PoblacionesService : IPoblacionesService
         {
             Id = nuevaPoblacion.Id,
             Nombre = nuevaPoblacion.Nombre,
-            CodigoIsoPais = nuevaPoblacion.CodigoIsoPais
+            Provincia = nuevaPoblacion.Provincia
         };
     }
 
@@ -73,14 +73,14 @@ public class PoblacionesService : IPoblacionesService
         }
 
         poblacionExistente.Nombre = poblacionActualizada.Nombre;
-        poblacionExistente.CodigoIsoPais = poblacionActualizada.CodigoIsoPais;
+        poblacionExistente.Provincia = poblacionActualizada.Provincia;
         await _dbContext.SaveChangesAsync();
 
         return new PoblacionDto
         {
             Id = poblacionExistente.Id,
             Nombre = poblacionExistente.Nombre,
-            CodigoIsoPais = poblacionExistente.CodigoIsoPais
+            Provincia = poblacionExistente.Provincia
         };
     }
 

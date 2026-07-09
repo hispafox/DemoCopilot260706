@@ -221,7 +221,7 @@ export function UsersPanel() {
               <option value="">Selecciona...</option>
               {poblaciones.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.nombre} ({item.codigoIsoPais})
+                  {item.nombre} ({item.provincia})
                 </option>
               ))}
             </select>
@@ -284,7 +284,7 @@ export function UsersPanel() {
                 </div>
                 <div>
                   <dt>Poblacion</dt>
-                  <dd>{item.poblacionNombre} ({item.poblacionCodigoIsoPais})</dd>
+                  <dd>{item.poblacionNombre} ({item.poblacionProvincia})</dd>
                 </div>
               </dl>
 

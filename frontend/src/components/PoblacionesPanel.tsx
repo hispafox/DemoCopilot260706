@@ -5,12 +5,12 @@ import type { PoblacionDto } from '../api/contracts';
 
 interface PoblacionFormState {
   nombre: string;
-  codigoIsoPais: string;
+  provincia: string;
 }
 
 const initialFormState: PoblacionFormState = {
   nombre: '',
-  codigoIsoPais: ''
+  provincia: ''
 };
 
 export function PoblacionesPanel() {
@@ -43,7 +43,7 @@ export function PoblacionesPanel() {
     setEditingId(item.id);
     setForm({
       nombre: item.nombre,
-      codigoIsoPais: item.codigoIsoPais
+      provincia: item.provincia
     });
     setFeedback(null);
     setError(null);
@@ -63,7 +63,7 @@ export function PoblacionesPanel() {
     try {
       const payload = {
         nombre: form.nombre.trim(),
-        codigoIsoPais: form.codigoIsoPais.trim().toUpperCase()
+        provincia: form.provincia.trim()
       };
 
       const savedItem = editingId === null
@@ -122,7 +122,7 @@ export function PoblacionesPanel() {
         <div>
           <p className="panel-kicker">Catalogo simple</p>
           <h2>Poblaciones</h2>
-          <p className="panel-description">Gestion de poblaciones con codigo ISO de pais (ISO 3166-1 alpha-2).</p>
+          <p className="panel-description">Gestion de poblaciones asociadas a su provincia.</p>
         </div>
       </div>
 
@@ -139,14 +139,13 @@ export function PoblacionesPanel() {
         </label>
 
         <label className="field">
-          <span>Codigo ISO pais</span>
+          <span>Provincia</span>
           <input
-            value={form.codigoIsoPais}
-            onChange={(event) => setForm((current) => ({ ...current, codigoIsoPais: event.target.value }))}
-            placeholder="ES"
+            value={form.provincia}
+            onChange={(event) => setForm((current) => ({ ...current, provincia: event.target.value }))}
+            placeholder="Barcelona"
             required
-            minLength={2}
-            maxLength={2}
+            maxLength={100}
           />
         </label>
 
@@ -179,7 +178,7 @@ export function PoblacionesPanel() {
             <article className="compact-row" key={item.id}>
               <div>
                 <strong>{item.nombre}</strong>
-                <p>ID {item.id} · ISO {item.codigoIsoPais}</p>
+                <p>ID {item.id} · Provincia {item.provincia}</p>
               </div>
               <div className="row-actions">
                 <button type="button" className="secondary-button" onClick={() => startEdit(item)}>

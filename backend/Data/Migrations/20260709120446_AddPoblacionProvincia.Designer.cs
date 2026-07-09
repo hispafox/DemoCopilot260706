@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260709115556_AddPoblacionCodigoIsoPais")]
-    partial class AddPoblacionCodigoIsoPais
+    [Migration("20260709120446_AddPoblacionProvincia")]
+    partial class AddPoblacionProvincia
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,19 +99,19 @@ namespace Backend.Api.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CodigoIsoPais")
+                    b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(2)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Provincia")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CodigoIsoPais");
+                    b.HasIndex("Provincia");
 
                     b.ToTable("Poblaciones");
                 });

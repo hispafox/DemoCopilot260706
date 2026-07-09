@@ -34,7 +34,7 @@ public class UsuariosService : IUsuariosService
                 SedeNombre = u.Sede.Nombre,
                 PoblacionId = u.PoblacionId,
                 PoblacionNombre = u.Poblacion.Nombre,
-                PoblacionCodigoIsoPais = u.Poblacion.CodigoIsoPais
+                PoblacionProvincia = u.Poblacion.Provincia
             })
             .ToListAsync();
     }
@@ -56,7 +56,7 @@ public class UsuariosService : IUsuariosService
                 SedeNombre = u.Sede.Nombre,
                 PoblacionId = u.PoblacionId,
                 PoblacionNombre = u.Poblacion.Nombre,
-                PoblacionCodigoIsoPais = u.Poblacion.CodigoIsoPais
+                PoblacionProvincia = u.Poblacion.Provincia
             })
             .FirstOrDefaultAsync();
     }
@@ -147,7 +147,7 @@ public class UsuariosService : IUsuariosService
             SedeNombre = usuario.Sede?.Nombre ?? string.Empty,
             PoblacionId = usuario.PoblacionId,
             PoblacionNombre = usuario.Poblacion?.Nombre ?? string.Empty,
-            PoblacionCodigoIsoPais = usuario.Poblacion?.CodigoIsoPais ?? string.Empty
+            PoblacionProvincia = usuario.Poblacion?.Provincia ?? string.Empty
         };
     }
 
@@ -168,7 +168,7 @@ public class UsuariosService : IUsuariosService
                 SedeNombre = u.Sede.Nombre,
                 PoblacionId = u.PoblacionId,
                 PoblacionNombre = u.Poblacion.Nombre,
-                PoblacionCodigoIsoPais = u.Poblacion.CodigoIsoPais
+                PoblacionProvincia = u.Poblacion.Provincia
             })
             .FirstOrDefaultAsync();
     }

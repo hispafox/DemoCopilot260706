@@ -227,7 +227,7 @@ Accept: {{json}}
 
 {
   "nombre": "Barcelona",
-  "codigoIsoPais": "ES"
+  "provincia": "Barcelona"
 }
 
 ### Obtener poblacion inexistente (error esperado 404)
@@ -245,7 +245,7 @@ Accept: {{json}}
 
 {
   "nombre": "Barcelona",
-  "codigoIsoPais": "E"
+  "provincia": "   "
 }
 
 ### Actualizar poblacion (200)
@@ -255,7 +255,7 @@ Accept: {{json}}
 
 {
   "nombre": "Barcelona Centro",
-  "codigoIsoPais": "ES"
+  "provincia": "Barcelona"
 }
 
 ### Actualizar poblacion inexistente (error esperado 404)
@@ -265,17 +265,17 @@ Accept: {{json}}
 
 {
   "nombre": "Poblacion Fantasma",
-  "codigoIsoPais": "ES"
+  "provincia": "Barcelona"
 }
 
-### Actualizar poblacion con ISO invalido (error esperado 400)
+### Actualizar poblacion con provincia invalida (error esperado 400)
 PUT {{host}}/api/poblaciones/1
 Content-Type: {{json}}
 Accept: {{json}}
 
 {
   "nombre": "Barcelona Centro",
-  "codigoIsoPais": "ESP"
+  "provincia": "   "
 }
 
 ### Eliminar poblacion sin usuarios asociados (204)
