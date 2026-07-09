@@ -20,6 +20,7 @@ Coordinar secuencias de trabajo entre skills con orden explicito, validaciones i
 
 Secuencia base recomendada en este repo:
 
+0. github-ops (Fase 1 — Apertura): crear Issue en GitHub + crear rama `feat/<N>-<slug>` vinculada. Captura el numero de issue `#N` y el nombre de rama; ambos deben propagarse al planificador y al resto del flujo.
 1. infraestructura-dotnet
 2. analisis-diseno
 3. validador-analisis-prd (opcional recomendado)
@@ -30,6 +31,7 @@ Secuencia base recomendada en este repo:
 8. validaciones-aplicacion (cuando el cambio alcanza restricciones de entrada o guards de dominio explicitados en el analisis)
 9. servicios-aplicacion (cuando el cambio alcanza logica de aplicacion y orquestacion)
 10. controladores-api (cuando el cambio alcanza endpoints HTTP)
+11. github-ops (Fase 2 — Cierre): ejecutar solo cuando verificador-democopilot emite APROBADO. Hace git add, git commit (usando mensajes-de-commit con `Refs #N` en el footer), git push y crea el Pull Request vinculado al issue (`Closes #N`, base `main`).
 
 El objetivo es reducir errores por saltarse pasos, mantener trazabilidad y permitir orquestar tambien otras cadenas de skills cuando el curso lo requiera.
 
@@ -68,8 +70,14 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 - Leer README.md y peticion del usuario.
 - Identificar alcance y artefactos impactados.
 
-2. Comprobacion de infraestructura
-- Ejecutar primero infraestructura-dotnet para determinar si existe proyecto compilable o solo codigo fuente.
+2. Apertura GitHub (Step 0 — obligatorio)
+- Invocar github-ops Fase 1: crear Issue en GitHub y crear rama `feat/<N>-<slug>`.
+- Capturar numero de issue `#N` y nombre de rama exacto.
+- Propagar `#N` y nombre de rama al planificador (para que los incluya en el encabezado del plan).
+- Si github-ops Fase 1 falla, detener flujo y reportar bloqueo.
+
+3. Comprobacion de infraestructura
+- Ejecutar infraestructura-dotnet para determinar si existe proyecto compilable o solo codigo fuente.
 - Fijar el nivel real de validacion posible para el resto de la cadena.
 - Si la peticion incluye crear proyecto o infraestructura, ejecutar infraestructura-dotnet en modo diagnostico-y-bootstrap.
 
@@ -111,7 +119,12 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 - Ejecutar el skill final de la secuencia.
 - Actualizar solo elementos relacionados cuando haya impacto real.
 
-10. Cierre y reporte
+10. Cierre GitHub (Step Final — obligatorio cuando verificador emite APROBADO)
+- Invocar github-ops Fase 2: git add, git commit (mensajes-de-commit con `Refs #N`), git push y crear PR (`Closes #N`, base `main`).
+- No ejecutar este paso si el veredicto del verificador es REVISAR.
+- Si github-ops Fase 2 falla en cualquier sub-paso, reportar bloqueo con causa exacta y accion correctiva.
+
+11. Cierre y reporte
 - Entregar resumen de ejecucion con:
   - estado por paso (OK, Omitido, Bloqueado)
   - cobertura extremo a extremo (Completa, Parcial o No aplica)
@@ -141,9 +154,11 @@ Si un gate es obligatorio, nunca ejecutar el siguiente skill hasta completar val
 
 Usar una salida breve y trazable:
 
+- Paso 0 github-ops (Apertura): OK | Bloqueado — Issue #N / Rama: feat/<N>-<slug>
 - Paso 1 <skill>: OK | Omitido | Bloqueado
 - Paso 2 <skill>: OK | Omitido | Bloqueado
 - Paso N <skill>: OK | Omitido | Bloqueado
+- Paso Final github-ops (Cierre): OK | Bloqueado — PR #<N-PR> / <URL>
 - Cobertura E2E: Completa | Parcial | No aplica
 - Archivos tocados:
   - <ruta>

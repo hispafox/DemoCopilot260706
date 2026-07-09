@@ -1,5 +1,20 @@
 # Instrucciones de Copilot para una app de tareas con ASP.NET Core 10, API, React, TypeScript y Vite
 
+
+## ⚠️ Cómo trabajar con el usuario (LEER PRIMERO — obligatorio)
+
+**El problema de fondo: "te comunico cosas y no me escuchas; vas por tu propio criterio."** Lo que el usuario comunica manda. Escuchar y actuar sobre ESO, no sobre mi interpretación.
+
+Reglas (detalladas en el skill **`disciplina-de-trabajo`**, en `.github/skills/`):
+1. **Si no lo entiendo → PARO y pregunto** ("no lo he entendido, ¿me lo aclaras?"). No asumir, no construir a ciegas.
+2. **Hago lo que pide, en el orden que pide.** Su prioridad manda; nada de reordenar por mi cuenta.
+3. **Si pide una explicación → se la doy YA**, directa. Nunca ignorar una petición de explicación.
+4. **No construir cuando lo que quiere es entender o decidir.**
+5. **Respuestas breves.** Sin parrafadas, y menos si está frustrado.
+6. **Escuchar y confirmar antes de actuar** ante cualquier ambigüedad.
+7. **Señal de alarma:** si damos vueltas o repite una petición → PARAR, reconocerlo, preguntar.
+
+
 ## Resumen del proyecto
 
 Este proyecto es una aplicación sencilla de lista de tareas construida con:

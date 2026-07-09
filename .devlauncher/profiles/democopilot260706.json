@@ -1,0 +1,29 @@
+{
+  "name": "DemoCopilot260706",
+  "rootDirectory": "",
+  "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "chromeProfile": "C:\\Users\\hispa\\AppData\\Local\\Google\\Chrome\\User Data\\DemoCopilot260706 Dev",
+  "startupTimeoutSeconds": 25,
+  "projects": [
+    {
+      "name": "API .NET (Backend.Api)",
+      "workingDirectory": "backend",
+      "command": "dotnet",
+      "arguments": "run --launch-profile Backend.Api",
+      "url": "https://localhost:55145",
+      "healthCheckUrl": "https://localhost:55145",
+      "openUrl": "https://localhost:55145"
+    },
+    {
+      "name": "demo-copilot-frontend",
+      "workingDirectory": "frontend",
+      "command": "cmd",
+      "arguments": "/c npm run dev",
+      "url": "http://localhost:5173",
+      "healthCheckUrl": "http://localhost:5173",
+      "openUrl": "http://localhost:5173"
+    }
+  ],
+  "createdAt": "2026-07-09T13:23:33.9183118+02:00",
+  "lastUsedAt": "2026-07-09T13:23:39.6056283+02:00"
+}

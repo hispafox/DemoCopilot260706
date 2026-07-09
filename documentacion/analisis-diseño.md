@@ -2,9 +2,9 @@
 
 ## 1. Objetivo del proyecto
 
-El proyecto busca construir una aplicación web de gestión de tareas con enfoque didáctico para formación en GitHub Copilot.
-Según el PRD, el alcance funcional objetivo incluye CRUD de tareas, plantillas y recurrencia básica.
-En el estado actual del código, la implementación está en fase inicial y ya incluye entidades de dominio para tareas y categorías.
+Aplicación web de gestión de tareas con enfoque didáctico para formación en GitHub Copilot. El núcleo es el CRUD de tareas; las plantillas y la recurrencia básica completan el alcance según el PRD.
+
+El modelo de dominio y la persistencia ya están en marcha. El frontend todavía no existe.
 
 ## 2. Stack tecnológico
 
@@ -73,11 +73,11 @@ Reglas de diseño aplicadas y observables en código actual:
 - Las reglas de negocio y la validación de referencias entre entidades deben residir en la capa de servicios, mientras los controladores se quedan con una función de orquestación HTTP ligera y traducción de errores.
 - El arranque de la aplicación debe usar migraciones de EF Core de forma asíncrona (`MigrateAsync`) para evitar bloquear el proceso de inicialización.
 
-Patrón de referencia recomendado para futuras correcciones:
+Reglas a seguir al añadir código nuevo:
 
-- Si un endpoint necesita comprobar la existencia de entidades relacionadas o aplicar reglas de negocio, esa lógica debe resolverse en el servicio correspondiente y no en el controlador.
-- El controlador debe validar el estado del modelo de entrada y, si el servicio lanza un error de negocio, traducirlo a un error HTTP comprensible sin duplicar la lógica.
-- Cuando el cambio afecta a persistencia y arranque, conviene priorizar operaciones `async/await` en toda la ruta de inicialización.
+- La lógica de negocio y las comprobaciones de referencias entre entidades van en el servicio. El controlador no toma decisiones de dominio.
+- Si el servicio lanza un error de negocio, el controlador lo traduce a un error HTTP claro. Sin duplicar lógica.
+- Cualquier operación que toque persistencia o arranque debe ser asíncrona de principio a fin (`async/await`).
 
 Elementos no implementados todavía en el código:
 
@@ -310,19 +310,19 @@ La API REST está implementada con persistencia en SQLite mediante Entity Framew
 
 ## 6. Decisiones de diseño
 
-- **Modelo canónico en castellano**: la entidad usa los nombres `Tarea`, `Id`, `Titulo`, `EstaCompletada`, `FechaCreacion`, `FechaVencimiento` y `Notas`, coherentes con las convenciones del proyecto.
-- **Validación declarativa en el dominio**: `Titulo` se define como obligatorio y con límite máximo de 200 caracteres mediante Data Annotations, reduciendo lógica manual repetitiva.
-- **Fecha de creación en UTC**: `FechaCreacion` se inicializa con `DateTime.UtcNow` para mantener consistencia temporal desde el origen de datos.
-- **Campos opcionales como anulables**: `FechaVencimiento` y `Notas` se modelan como opcionales para permitir tareas sin fecha límite ni notas.
-- **Priorización explícita de tareas**: `Tarea` incorpora `Prioridad` con valores `Baja`, `Normal`, `Alta` y `Urgente`, con valor por defecto `Normal`.
-- **Clasificación visual por categoría**: se incorpora la entidad `Categoria` con `Nombre` y `Color` para habilitar taxonomía funcional y representación visual consistente.
-- **Relación de categorización**: `Tarea` incorpora `CategoriaId` y navegación `Categoria`, y `Categoria` expone la colección `Tareas` para representar la asociación en ambos sentidos.
-- **Recurrencia explícita en dominio**: `Tarea` incorpora `EsRepetitiva`, `TipoRecurrencia` y `ProximaRecurrencia` para modelar reglas de recurrencia declaradas en PRD.
-- **Plantillas reutilizables**: se incorpora la entidad `PlantillaTarea` y su relación opcional con `Tarea` mediante `PlantillaTareaId`.
-- **Asignación opcional de responsable**: `Tarea` incorpora `UsuarioId` y navegación `Usuario`, y `Usuario` expone colección `Tareas` para modelar relación 1:N con borrado en `SetNull`.
-- **Usuarios con departamento obligatorio**: `Usuario` incorpora `DepartamentoId` y navegación `Departamento`, estableciendo relación 1:N (`Departamento` -> `Usuarios`) con restricción de borrado.
-- **Mantenimiento de departamentos**: se incorpora recurso API específico para alta, consulta, edición y eliminación controlada de departamentos.
-- **Contratos HTTP desacoplados**: las acciones de API usan DTOs dedicados para entrada y salida, preservando el modelo de dominio interno.
+- **Modelo canónico en castellano**: los nombres de la entidad (`Tarea`, `Titulo`, `EstaCompletada`, `FechaCreacion`...) siguen las convenciones del proyecto y no varían salvo necesidad funcional real.
+- **Validación declarativa**: `Titulo` lleva `Required` y `StringLength(200)` directamente en el modelo. Sin lógica manual repetida.
+- **Fecha en UTC siempre**: `FechaCreacion` se inicializa con `DateTime.UtcNow`. Guardar en UTC evita desfases entre zonas horarias.
+- **Opcionales como anulables**: `FechaVencimiento` y `Notas` son `null` por defecto. Una tarea sin fecha límite ni notas es perfectamente válida.
+- **Prioridad con valor por defecto**: `Tarea` tiene `Prioridad` con cuatro niveles (`Baja`, `Normal`, `Alta`, `Urgente`). Si no se indica, cae en `Normal`.
+- **Categoría para clasificar y colorear**: la entidad `Categoria` lleva `Nombre` y `Color`. Sirve para agrupar tareas y darles representación visual coherente.
+- **Relación de categorización bidireccional**: `Tarea` referencia a `Categoria` por `CategoriaId`; la navegación inversa (`Categoria.Tareas`) permite recorrerla en ambos sentidos.
+- **Recurrencia en el propio modelo**: `EsRepetitiva`, `TipoRecurrencia` y `ProximaRecurrencia` expresan las reglas del PRD directamente en `Tarea`. Sin lógica escondida en capas superiores.
+- **Plantillas como entidad independiente**: `PlantillaTarea` vive por su cuenta. `Tarea` guarda opcionalmente el `PlantillaTareaId` del que proviene.
+- **Responsable opcional con borrado seguro**: `Tarea` puede tener un responsable vía `UsuarioId`. Si se elimina el usuario, el campo queda a `null` (comportamiento `SetNull`).
+- **Departamento obligatorio para usuarios**: no se puede crear un `Usuario` sin `Departamento`. La relación es 1:N y tiene restricción de borrado en cascada.
+- **API de departamentos completa**: el recurso `/api/departamentos` cubre alta, consulta, edición y eliminación. El borrado falla con `409 Conflict` si el departamento tiene usuarios.
+- **DTOs para entrada y salida**: los endpoints no exponen entidades de dominio. Cada operación tiene su contrato propio, así el modelo interno queda aislado.
 
 ## 7. Pendientes / Preguntas abiertas
 

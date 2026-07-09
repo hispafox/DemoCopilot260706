@@ -29,6 +29,7 @@ Antes de redactar el plan, usa tus herramientas de lectura y búsqueda (`read_fi
 - Lee `documentacion/analisis-diseño.md` si existe, para alinear el plan con el análisis y diseño técnico.
 - Localiza y lee el código afectado por el requisito (Models, Services, Controllers, Data, etc.) para que el plan sea realista y concreto.
 - No pidas al usuario que te pegue contenido de archivos que puedes leer directamente.
+- Si el orquestador te ha pasado un número de issue (`#N`) y un nombre de rama, únelos en el encabezado del plan tal como se indica en la estructura de más abajo. Si no te los ha pasado, deja esos campos como `pendiente`.
 
 ## Salida obligatoria
 
@@ -42,6 +43,9 @@ El plan es un contrato: siempre tiene la misma estructura, con estas diez seccio
 
 ```markdown
 # Plan: <nombre de la funcionalidad>
+
+**Issue:** #<N>
+**Rama:** feat/<N>-<slug>
 
 ## 1. Resumen
 ## 2. Requisitos
