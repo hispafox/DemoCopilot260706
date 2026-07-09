@@ -211,6 +211,8 @@ public class UsuarioDto
     public int PoblacionId { get; set; }
 
     public string PoblacionNombre { get; set; } = string.Empty;
+
+    public string PoblacionCodigoIsoPais { get; set; } = string.Empty;
 }
 
 public class CrearActualizarUsuarioRequest
@@ -244,11 +246,14 @@ public class PoblacionDto
     public int Id { get; set; }
 
     public string Nombre { get; set; } = string.Empty;
+
+    public string CodigoIsoPais { get; set; } = string.Empty;
 }
 
 public class CrearActualizarPoblacionRequest
 {
     private string _nombre = string.Empty;
+    private string _codigoIsoPais = string.Empty;
 
     [Required]
     [MinLength(1, ErrorMessage = "El nombre no puede estar vacio.")]
@@ -257,6 +262,14 @@ public class CrearActualizarPoblacionRequest
     {
         get => _nombre;
         set => _nombre = (value ?? string.Empty).Trim();
+    }
+
+    [Required]
+    [StringLength(2, MinimumLength = 2, ErrorMessage = "El codigo ISO del pais debe tener exactamente 2 caracteres.")]
+    public string CodigoIsoPais
+    {
+        get => _codigoIsoPais;
+        set => _codigoIsoPais = (value ?? string.Empty).Trim().ToUpperInvariant();
     }
 }
 

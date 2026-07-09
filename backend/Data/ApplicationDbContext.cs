@@ -106,6 +106,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Poblacion>(entity =>
         {
             entity.Property(p => p.Nombre).IsRequired().HasMaxLength(100);
+            entity.Property(p => p.CodigoIsoPais).IsRequired().HasMaxLength(2);
+            entity.HasIndex(p => p.CodigoIsoPais);
         });
 
         modelBuilder.Entity<TipoTarea>(entity =>
