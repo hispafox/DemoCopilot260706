@@ -10,6 +10,8 @@ public interface ITareasService
 
     Task<TareaDto?> ObtenerPorIdAsync(int id);
 
+    Task<IReadOnlyList<TareaDto>> BuscarPorTituloAsync(string texto);
+
     Task<TareaDto> CrearAsync(CrearActualizarTareaRequest tarea);
 
     Task<TareaDto?> ActualizarAsync(int id, CrearActualizarTareaRequest tareaActualizada);

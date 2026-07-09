@@ -197,6 +197,36 @@ public class TareasService : ITareasService
         return await ObtenerPorIdAsync(nuevaTarea.Id) ?? Mapear(nuevaTarea);
     }
 
+    public async Task<IReadOnlyList<TareaDto>> BuscarPorTituloAsync(string texto)
+    {
+        var patron = $"%{texto}%";
+
+        return await _dbContext.Tareas
+            .AsNoTracking()
+            .Where(tarea => EF.Functions.Like(tarea.Titulo, patron))
+            .OrderByDescending(tarea => tarea.FechaCreacion)
+            .Select(tarea => new TareaDto
+            {
+                Id = tarea.Id,
+                Titulo = tarea.Titulo,
+                EstaCompletada = tarea.EstaCompletada,
+                FechaCreacion = tarea.FechaCreacion,
+                FechaVencimiento = tarea.FechaVencimiento,
+                Notas = tarea.Notas,
+                Prioridad = tarea.Prioridad,
+                EsRepetitiva = tarea.EsRepetitiva,
+                TipoRecurrencia = tarea.TipoRecurrencia,
+                ProximaRecurrencia = tarea.ProximaRecurrencia,
+                PlantillaTareaId = tarea.PlantillaTareaId,
+                CategoriaId = tarea.CategoriaId,
+                UsuarioId = tarea.UsuarioId,
+                UsuarioNombre = tarea.Usuario != null ? tarea.Usuario.Nombre : null,
+                TipoTareaId = tarea.TipoTareaId,
+                TipoTareaNombre = tarea.TipoTarea != null ? tarea.TipoTarea.Nombre : string.Empty
+            })
+            .ToListAsync();
+    }
+
     private async Task ValidarReferenciasAsync(CrearActualizarTareaRequest tarea)
     {
         if (tarea.UsuarioId is int usuarioId)

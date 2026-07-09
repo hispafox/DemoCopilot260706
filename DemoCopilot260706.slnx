@@ -2,4 +2,7 @@
   <Folder Name="/backend/">
     <Project Path="backend/Backend.Api.csproj" />
   </Folder>
+  <Folder Name="/mcp/">
+    <Project Path="mcp/Backend.Mcp.csproj" />
+  </Folder>
 </Solution>
