@@ -42,6 +42,12 @@ La secuencia base del repositorio es la siguiente:
 
 La secuencia es obligatoria porque cada paso alimenta al siguiente. El documento se mantiene para que esa dependencia se vea de un vistazo.
 
+Nota de arquitectura aplicable a cambios futuros:
+
+- Cuando un cambio implique comprobar existencia de entidades relacionadas o imponer reglas de negocio, la responsabilidad debe moverse a la capa de servicios antes de tocar los controladores.
+- En esos casos, los controladores solo deben recibir la petición, invocar al servicio y traducir el resultado o el error a una respuesta HTTP coherente.
+- Si el cambio afecta al arranque de la API, conviene preferir operaciones asíncronas como `MigrateAsync` para evitar bloqueos innecesarios.
+
 ## 4. Mapa de dependencias
 
 ```mermaid

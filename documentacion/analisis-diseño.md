@@ -70,6 +70,14 @@ Reglas de diseño aplicadas y observables en código actual:
 - Validación por atributos en el propio modelo (`Required`, `StringLength`).
 - Uso de `DateTime.UtcNow` para inicializar la fecha de creación en UTC.
 - Separación de contratos HTTP en `backend/Contracts` para no exponer entidades internas directamente desde los controladores.
+- Las reglas de negocio y la validación de referencias entre entidades deben residir en la capa de servicios, mientras los controladores se quedan con una función de orquestación HTTP ligera y traducción de errores.
+- El arranque de la aplicación debe usar migraciones de EF Core de forma asíncrona (`MigrateAsync`) para evitar bloquear el proceso de inicialización.
+
+Patrón de referencia recomendado para futuras correcciones:
+
+- Si un endpoint necesita comprobar la existencia de entidades relacionadas o aplicar reglas de negocio, esa lógica debe resolverse en el servicio correspondiente y no en el controlador.
+- El controlador debe validar el estado del modelo de entrada y, si el servicio lanza un error de negocio, traducirlo a un error HTTP comprensible sin duplicar la lógica.
+- Cuando el cambio afecta a persistencia y arranque, conviene priorizar operaciones `async/await` en toda la ruta de inicialización.
 
 Elementos no implementados todavía en el código:
 

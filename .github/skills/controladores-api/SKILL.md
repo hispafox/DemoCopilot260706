@@ -75,6 +75,8 @@ Reglas de arquitectura:
 - Mantener los controladores ligeros y centrados en recibir peticiones, validar entradas, coordinar persistencia y devolver respuestas HTTP correctas.
 - No introducir capas adicionales como repositorios, CQRS o mediadores salvo peticion explicita.
 - No asumir que el proyecto backend ya existe o compila: comprobar primero el estado real del repo antes de cablear servicios, rutas o validaciones de compilacion.
+- Si la operación requiere comprobar existencia de entidades relacionadas o aplicar reglas de negocio, esa lógica debe moverse al servicio correspondiente; el controlador solo debe orquestar la llamada y traducir el resultado a HTTP.
+- Cuando el cambio afecta al arranque o a la inicialización de EF Core, preferir `MigrateAsync` y `RunAsync` si la infraestructura lo permite.
 
 Reglas de deteccion de proyecto:
 

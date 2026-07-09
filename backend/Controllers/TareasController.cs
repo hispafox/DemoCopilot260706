@@ -12,14 +12,10 @@ namespace Backend.Controllers;
 public class TareasController : ControllerBase
 {
     private readonly ITareasService _tareasService;
-    private readonly IUsuariosService _usuariosService;
-    private readonly ITiposTareaService _tiposTareaService;
 
-    public TareasController(ITareasService tareasService, IUsuariosService usuariosService, ITiposTareaService tiposTareaService)
+    public TareasController(ITareasService tareasService)
     {
         _tareasService = tareasService;
-        _usuariosService = usuariosService;
-        _tiposTareaService = tiposTareaService;
     }
 
     [HttpGet]
@@ -43,25 +39,16 @@ public class TareasController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        if (tarea.UsuarioId is int usuarioId)
+        try
         {
-            var usuario = await _usuariosService.ObtenerPorIdAsync(usuarioId);
-            if (usuario is null)
-            {
-                ModelState.AddModelError(nameof(tarea.UsuarioId), "El usuario indicado no existe.");
-                return ValidationProblem(ModelState);
-            }
+            var nuevaTarea = await _tareasService.CrearAsync(tarea);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaTarea.Id }, nuevaTarea);
         }
-
-        var tipoTareaExiste = await _tiposTareaService.ExisteAsync(tarea.TipoTareaId);
-        if (!tipoTareaExiste)
+        catch (ArgumentException ex)
         {
-            ModelState.AddModelError(nameof(tarea.TipoTareaId), "El tipo de tarea indicado no existe.");
+            ModelState.AddModelError(ex.ParamName ?? nameof(tarea.TipoTareaId), ex.Message);
             return ValidationProblem(ModelState);
         }
-
-        var nuevaTarea = await _tareasService.CrearAsync(tarea);
-        return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaTarea.Id }, nuevaTarea);
     }
 
     [HttpPut("{id:int}")]
@@ -72,25 +59,16 @@ public class TareasController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        if (tareaActualizada.UsuarioId is int usuarioId)
+        try
         {
-            var usuario = await _usuariosService.ObtenerPorIdAsync(usuarioId);
-            if (usuario is null)
-            {
-                ModelState.AddModelError(nameof(tareaActualizada.UsuarioId), "El usuario indicado no existe.");
-                return ValidationProblem(ModelState);
-            }
+            var tarea = await _tareasService.ActualizarAsync(id, tareaActualizada);
+            return tarea is null ? NotFound() : Ok(tarea);
         }
-
-        var tipoTareaExiste = await _tiposTareaService.ExisteAsync(tareaActualizada.TipoTareaId);
-        if (!tipoTareaExiste)
+        catch (ArgumentException ex)
         {
-            ModelState.AddModelError(nameof(tareaActualizada.TipoTareaId), "El tipo de tarea indicado no existe.");
+            ModelState.AddModelError(ex.ParamName ?? nameof(tareaActualizada.TipoTareaId), ex.Message);
             return ValidationProblem(ModelState);
         }
-
-        var tarea = await _tareasService.ActualizarAsync(id, tareaActualizada);
-        return tarea is null ? NotFound() : Ok(tarea);
     }
 
     [HttpDelete("{id:int}")]

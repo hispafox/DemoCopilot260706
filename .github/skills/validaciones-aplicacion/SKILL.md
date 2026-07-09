@@ -59,8 +59,8 @@ Este skill no inventa reglas nuevas. Si una validacion no aparece en el analisis
 
 - No duplicar la misma validacion en varias capas salvo que el analisis lo exija de forma explicita.
 - No mover guards de dominio a controladores.
-- No convertir una restriccion de negocio en una validacion de DTO si el analisis la presenta como una decision de estado.
-- No inventar mensajes de error, campos obligatorios o transiciones no documentadas.
+- No convertir una restriccion de negocio en una validacion de DTO si el analisis la presenta como una decision de estado.- Cuando el cambio requiere comprobar existencia de entidades relacionadas o estados permitidos, implementarlo en servicios o lógica de negocio y no en el controlador.
+- Si un endpoint necesita devolver un error de validación por una regla vinculada al dominio, el servicio debe lanzar o devolver un resultado de error claro y el controlador debe traducirlo a la respuesta HTTP adecuada.- No inventar mensajes de error, campos obligatorios o transiciones no documentadas.
 - No introducir validaciones adicionales para "endurecer" el sistema si no estan respaldadas por el analisis.
 
 ## Gates recomendados

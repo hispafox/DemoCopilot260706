@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Models;
 
-public class Tarea : IValidatableObject
+public class Tarea
 {
     private string _titulo = string.Empty;
 
@@ -50,31 +49,4 @@ public class Tarea : IValidatableObject
     public int TipoTareaId { get; set; }
 
     public TipoTarea? TipoTarea { get; set; }
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-        if (!EsRepetitiva)
-        {
-            if (TipoRecurrencia is not null)
-            {
-                yield return new ValidationResult(
-                    "TipoRecurrencia debe ser null cuando EsRepetitiva es false.",
-                    new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
-            }
-
-            if (ProximaRecurrencia is not null)
-            {
-                yield return new ValidationResult(
-                    "ProximaRecurrencia debe ser null cuando EsRepetitiva es false.",
-                    new[] { nameof(ProximaRecurrencia), nameof(EsRepetitiva) });
-            }
-        }
-
-        if (EsRepetitiva && TipoRecurrencia is null)
-        {
-            yield return new ValidationResult(
-                "TipoRecurrencia es obligatorio cuando EsRepetitiva es true.",
-                new[] { nameof(TipoRecurrencia), nameof(EsRepetitiva) });
-        }
-    }
 }

@@ -61,6 +61,8 @@ public class UsuariosService : IUsuariosService
 
     public async Task<UsuarioDto> CrearAsync(CrearActualizarUsuarioRequest usuario)
     {
+        await ValidarReferenciasAsync(usuario);
+
         var nuevoUsuario = new Usuario
         {
             Nombre = usuario.Nombre,
@@ -78,6 +80,8 @@ public class UsuariosService : IUsuariosService
 
     public async Task<UsuarioDto?> ActualizarAsync(int id, CrearActualizarUsuarioRequest usuarioActualizado)
     {
+        await ValidarReferenciasAsync(usuarioActualizado);
+
         var usuarioExistente = await _dbContext.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
         if (usuarioExistente is null)
         {
@@ -105,6 +109,27 @@ public class UsuariosService : IUsuariosService
         _dbContext.Usuarios.Remove(usuarioExistente);
         await _dbContext.SaveChangesAsync();
         return true;
+    }
+
+    private async Task ValidarReferenciasAsync(CrearActualizarUsuarioRequest usuario)
+    {
+        var departamentoExiste = await _dbContext.Departamentos.AnyAsync(item => item.Id == usuario.DepartamentoId);
+        if (!departamentoExiste)
+        {
+            throw new ArgumentException("El departamento indicado no existe.", nameof(CrearActualizarUsuarioRequest.DepartamentoId));
+        }
+
+        var sedeExiste = await _dbContext.Sedes.AnyAsync(item => item.Id == usuario.SedeId);
+        if (!sedeExiste)
+        {
+            throw new ArgumentException("La sede indicada no existe.", nameof(CrearActualizarUsuarioRequest.SedeId));
+        }
+
+        var poblacionExiste = await _dbContext.Poblaciones.AnyAsync(item => item.Id == usuario.PoblacionId);
+        if (!poblacionExiste)
+        {
+            throw new ArgumentException("La poblacion indicada no existe.", nameof(CrearActualizarUsuarioRequest.PoblacionId));
+        }
     }
 
     private static UsuarioDto Mapear(Usuario usuario)

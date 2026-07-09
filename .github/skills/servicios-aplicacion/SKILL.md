@@ -59,6 +59,9 @@ Reglas de arquitectura:
 - Mantener separacion de responsabilidades: controlador (HTTP), servicio (orquestacion), logica de negocio (reglas), dominio/persistencia (modelo y datos).
 - No mover logica de negocio compleja al controlador.
 - No concentrar reglas de negocio en servicios cuando exista capa de logica de negocio.
+- Cuando una operación necesita comprobar existencia de entidades relacionadas o aplicar reglas de negocio, esa lógica debe residir en el servicio o en la capa de negocio correspondiente, no en el controlador.
+- El controlador solo debe validar el modelo de entrada y traducir resultado o error a una respuesta HTTP coherente.
+- Si el cambio afecta al arranque de la API, preferir operaciones asíncronas como `MigrateAsync` en lugar de migraciones síncronas.
 - No introducir repositorios, CQRS o mediadores salvo peticion explicita.
 
 Reglas de DI:

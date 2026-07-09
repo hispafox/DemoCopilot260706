@@ -74,6 +74,8 @@ public class TareasService : ITareasService
 
     public async Task<TareaDto> CrearAsync(CrearActualizarTareaRequest tarea)
     {
+        await ValidarReferenciasAsync(tarea);
+
         var nuevaTarea = new Tarea
         {
             Titulo = tarea.Titulo,
@@ -104,6 +106,8 @@ public class TareasService : ITareasService
 
     public async Task<TareaDto?> ActualizarAsync(int id, CrearActualizarTareaRequest tareaActualizada)
     {
+        await ValidarReferenciasAsync(tareaActualizada);
+
         var tareaExistente = await _dbContext.Tareas.FirstOrDefaultAsync(item => item.Id == id);
         if (tareaExistente is null)
         {
@@ -191,6 +195,24 @@ public class TareasService : ITareasService
         _dbContext.Tareas.Add(nuevaTarea);
         await _dbContext.SaveChangesAsync();
         return await ObtenerPorIdAsync(nuevaTarea.Id) ?? Mapear(nuevaTarea);
+    }
+
+    private async Task ValidarReferenciasAsync(CrearActualizarTareaRequest tarea)
+    {
+        if (tarea.UsuarioId is int usuarioId)
+        {
+            var usuarioExiste = await _dbContext.Usuarios.AnyAsync(item => item.Id == usuarioId);
+            if (!usuarioExiste)
+            {
+                throw new ArgumentException("El usuario indicado no existe.", nameof(CrearActualizarTareaRequest.UsuarioId));
+            }
+        }
+
+        var tipoTareaExiste = await _dbContext.TiposTarea.AnyAsync(item => item.Id == tarea.TipoTareaId);
+        if (!tipoTareaExiste)
+        {
+            throw new ArgumentException("El tipo de tarea indicado no existe.", nameof(CrearActualizarTareaRequest.TipoTareaId));
+        }
     }
 
     private static TareaDto Mapear(Tarea tarea)
