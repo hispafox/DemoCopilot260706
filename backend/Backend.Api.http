@@ -27,6 +27,110 @@ Accept: {{json}}
   "nombre": "   "
 }
 
+### Actualizar departamento (200)
+PUT {{host}}/api/departamentos/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Producto y Plataforma"
+}
+
+### Actualizar departamento inexistente (error esperado 404)
+PUT {{host}}/api/departamentos/999999
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Departamento Fantasma"
+}
+
+### Actualizar departamento inválido (400)
+PUT {{host}}/api/departamentos/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   "
+}
+
+### Eliminar departamento sin usuarios asociados (204)
+DELETE {{host}}/api/departamentos/2
+Accept: {{json}}
+
+### Eliminar departamento con usuarios asociados (error esperado 409)
+DELETE {{host}}/api/departamentos/1
+Accept: {{json}}
+
+### Eliminar departamento inexistente (error esperado 404)
+DELETE {{host}}/api/departamentos/999999
+Accept: {{json}}
+
+### Listar sedes
+GET {{host}}/api/sedes
+Accept: {{json}}
+
+### Obtener sede inexistente (error esperado 404)
+GET {{host}}/api/sedes/999999
+Accept: {{json}}
+
+### Crear sede (201)
+POST {{host}}/api/sedes
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Madrid Centro"
+}
+
+### Crear sede inválida (400)
+POST {{host}}/api/sedes
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   "
+}
+
+### Actualizar sede (200)
+PUT {{host}}/api/sedes/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Madrid Noroeste"
+}
+
+### Actualizar sede inexistente (error esperado 404)
+PUT {{host}}/api/sedes/999999
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Sede Fantasma"
+}
+
+### Actualizar sede inválida (400)
+PUT {{host}}/api/sedes/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   "
+}
+
+### Eliminar sede sin usuarios asociados (204)
+DELETE {{host}}/api/sedes/2
+Accept: {{json}}
+
+### Eliminar sede con usuarios asociados (error esperado 409)
+DELETE {{host}}/api/sedes/1
+Accept: {{json}}
+
+### Eliminar sede inexistente (error esperado 404)
+DELETE {{host}}/api/sedes/999999
+Accept: {{json}}
+
 ### Listar usuarios
 GET {{host}}/api/usuarios
 Accept: {{json}}
@@ -204,6 +308,49 @@ Accept: {{json}}
   "nombre": "   "
 }
 
+### Actualizar tipo de tarea (200)
+PUT {{host}}/api/tipos-tarea/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Incidencia Actualizada",
+  "descripcion": "Seguimiento actualizado",
+  "estaActivo": true
+}
+
+### Actualizar tipo de tarea inexistente (error esperado 404)
+PUT {{host}}/api/tipos-tarea/999999
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "Tipo Fantasma",
+  "descripcion": "No debe existir",
+  "estaActivo": true
+}
+
+### Actualizar tipo de tarea inválido (400)
+PUT {{host}}/api/tipos-tarea/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "nombre": "   "
+}
+
+### Eliminar tipo de tarea sin tareas asociadas (204)
+DELETE {{host}}/api/tipos-tarea/2
+Accept: {{json}}
+
+### Eliminar tipo de tarea con tareas asociadas (error esperado 409)
+DELETE {{host}}/api/tipos-tarea/1
+Accept: {{json}}
+
+### Eliminar tipo de tarea inexistente (error esperado 404)
+DELETE {{host}}/api/tipos-tarea/999999
+Accept: {{json}}
+
 ### Obtener tarea inexistente (error esperado 404)
 GET {{host}}/api/tareas/999999
 Accept: {{json}}
@@ -317,3 +464,60 @@ Accept: {{json}}
   "esRepetitiva": false,
   "estaActiva": true
 }
+
+### Actualizar plantilla (200)
+PUT {{host}}/api/plantillas/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "Plantilla semanal actualizada",
+  "notas": "Contrato de actualización",
+  "esRepetitiva": true,
+  "tipoRecurrencia": 2,
+  "estaActiva": true
+}
+
+### Actualizar plantilla inexistente (error esperado 404)
+PUT {{host}}/api/plantillas/999999
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "Plantilla fantasma",
+  "notas": "No debe existir",
+  "esRepetitiva": false,
+  "estaActiva": true
+}
+
+### Actualizar plantilla inválida (400)
+PUT {{host}}/api/plantillas/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "titulo": "   ",
+  "notas": "Debe fallar por titulo vacío tras trim",
+  "esRepetitiva": false,
+  "estaActiva": true
+}
+
+### Eliminar plantilla existente (204)
+DELETE {{host}}/api/plantillas/2
+Accept: {{json}}
+
+### Eliminar plantilla inexistente (error esperado 404)
+DELETE {{host}}/api/plantillas/999999
+Accept: {{json}}
+
+### Crear tarea desde plantilla válida (201)
+POST {{host}}/api/tareas/desde-plantilla/1
+Accept: {{json}}
+
+### Crear tarea desde plantilla inexistente (error esperado 404)
+POST {{host}}/api/tareas/desde-plantilla/999999
+Accept: {{json}}
+
+### Completar tarea existente (200)
+POST {{host}}/api/tareas/1/completar
+Accept: {{json}}
